@@ -1,0 +1,167 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+//////////////////////////////////////////////////////////
+// ENUMS
+//////////////////////////////////////////////////////////
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ReservationStatus {
+  HELD // reserved but not paid yet
+  BOOKED // confirmed & paid
+  CANCELLED
+  EXPIRED
+}
+
+//////////////////////////////////////////////////////////
+// MODELS
+//////////////////////////////////////////////////////////
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(USER)
+  createdAt    DateTime @default(now())
+
+  reservations Reservation[]
+}
+
+//////////////////////////////////////////////////////////
+// MOVIES, THEATERS, SEATS
+//////////////////////////////////////////////////////////
+
+model Movie {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  posterUrl   String?
+  genre       String
+  durationMin Int
+  createdAt   DateTime @default(now())
+
+  showtimes Showtime[]
+}
+
+model Theater {
+  id        String   @id @default(uuid())
+  name      String
+  capacity  Int
+  createdAt DateTime @default(now())
+
+  seats     Seat[]
+  showtimes Showtime[]
+}
+
+model Seat {
+  id         String  @id @default(uuid())
+  theaterId  String
+  row        String?
+  number     Int?
+  label      String
+  type       String? // e.g. "regular" or "vip"
+  extraPrice Float?  @default(0)
+
+  theater          Theater           @relation(fields: [theaterId], references: [id], onDelete: Cascade)
+  reservationSeats ReservationSeat[]
+
+  @@unique([theaterId, label]) // Each seat label must be unique within a theater
+}
+
+//////////////////////////////////////////////////////////
+// SHOWTIMES
+//////////////////////////////////////////////////////////
+
+model Showtime {
+  id        String   @id @default(uuid())
+  movieId   String
+  theaterId String
+  startTime DateTime
+  endTime   DateTime
+  price     Float
+  status    String?  @default("scheduled")
+  createdAt DateTime @default(now())
+
+  movie            Movie             @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  theater          Theater           @relation(fields: [theaterId], references: [id], onDelete: Cascade)
+  reservations     Reservation[]
+  reservationSeats ReservationSeat[]
+
+  @@unique([theaterId, startTime]) // prevent overlapping start times per theater
+  @@index([movieId])
+  @@index([theaterId])
+}
+
+//////////////////////////////////////////////////////////
+// RESERVATIONS
+//////////////////////////////////////////////////////////
+
+model Reservation {
+  id         String            @id @default(uuid())
+  userId     String
+  showtimeId String
+  status     ReservationStatus @default(HELD)
+  totalPrice Float?
+  createdAt  DateTime          @default(now())
+  expiresAt  DateTime?
+
+  user     User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  showtime Showtime          @relation(fields: [showtimeId], references: [id], onDelete: Cascade)
+  seats    ReservationSeat[]
+  payment  Payment?
+
+  @@index([userId])
+  @@index([showtimeId])
+}
+
+//////////////////////////////////////////////////////////
+// RESERVATION SEATS
+//////////////////////////////////////////////////////////
+
+model ReservationSeat {
+  id             String @id @default(uuid())
+  reservationId  String
+  seatId         String
+  showtimeId     String
+  priceAtBooking Float
+
+  reservation Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  seat        Seat        @relation(fields: [seatId], references: [id], onDelete: Cascade)
+  showtime    Showtime    @relation(fields: [showtimeId], references: [id], onDelete: Cascade)
+
+  @@unique([showtimeId, seatId]) // Prevent double-booking same seat in same showtime
+  @@index([seatId])
+}
+
+//////////////////////////////////////////////////////////
+// PAYMENTS
+//////////////////////////////////////////////////////////
+
+model Payment {
+  id            String   @id @default(uuid())
+  reservationId String   @unique
+  amount        Float
+  providerTxnId String?
+  status        String // e.g. "pending", "succeeded", "failed"
+  createdAt     DateTime @default(now())
+
+  reservation Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+}
