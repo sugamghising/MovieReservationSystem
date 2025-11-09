@@ -44,7 +44,7 @@ export const addSeat = async (req: Request, res: Response) => {
     try {
         const seat = await theatreService.addSeat(theatreId, { label: label, row: row, number: number, type: type, extraPrice: extraPrice });
         if (!seat) {
-            return res.status(404).send({ message: "seat not added" })
+            return res.status(400).send({ message: "seat not added" })
         }
         res.status(200).json(seat);
     } catch (error) {
