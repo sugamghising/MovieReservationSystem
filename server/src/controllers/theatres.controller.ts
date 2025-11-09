@@ -27,7 +27,7 @@ export const listTheatre = async (req: Request, res: Response) => {
         if (!theaters) {
             return res.status(404).json({ message: "Cannot find theatre." })
         }
-        return res.status(201).json(theaters)
+        return res.status(200).json(theaters)
     } catch (error) {
         res.status(400).json({ error: (error as Error).message });
     }
@@ -40,9 +40,10 @@ export const addSeat = async (req: Request, res: Response) => {
     }
 
     const { theatreId } = req.params as { theatreId: string };
-    const { label, row, number, type, extraPrice } = parsed.data;
+    const seatData = parsed.data;
+
     try {
-        const seat = await theatreService.addSeat(theatreId, { label: label, row: row, number: number, type: type, extraPrice: extraPrice });
+        const seat = await theatreService.addSeat(theatreId, seatData);
         if (!seat) {
             return res.status(400).send({ message: "seat not added" })
         }

@@ -6,11 +6,11 @@ export const createTheatreSchema = z.object({
 })
 
 export const addSeatSchema = z.object({
-    label: z.string(),
-    row: z.string(),
-    number: z.number().int(),
-    type: z.string(),
-    extraPrice: z.number().default(0)
+    label: z.string().min(1, 'Label is required'),
+    row: z.string().optional(),
+    number: z.number().int().optional(),
+    type: z.string().optional(),
+    extraPrice: z.number().nonnegative('Extra price cannot be negative').default(0)
 })
 
 export type CreateTheatreType = z.infer<typeof createTheatreSchema>

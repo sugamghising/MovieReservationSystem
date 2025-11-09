@@ -7,9 +7,9 @@ A robust backend API for a movie reservation system built with Node.js, Express,
 - ✅ User Authentication (Register/Login with JWT)
 - ✅ Role-based Access Control (Admin/User)
 - ✅ Movie Management (CRUD operations)
-- 🚧 Theater Management (Coming soon)
-- 🚧 Showtime Management (Coming soon)
-- 🚧 Seat Reservation System (Coming soon)
+- ✅ Theater Management (Create theaters, add seats)
+- ✅ Showtime Management (Create and list showtimes)
+- ✅ Seat Reservation System (Book seats, view reservations)
 - 🚧 Payment Processing (Coming soon)
 
 ## Tech Stack
@@ -158,6 +158,94 @@ Content-Type: application/json
 GET /api/movies
 ```
 
+### Create Theater (Admin only)
+
+```bash
+POST /api/theatres
+Authorization: Bearer <your-jwt-token>
+Content-Type: application/json
+
+{
+  "name": "Theater 1",
+  "capacity": 100
+}
+```
+
+### Add Seat to Theater (Admin only)
+
+```bash
+POST /api/theatres/{theaterId}/seat
+Authorization: Bearer <your-jwt-token>
+Content-Type: application/json
+
+{
+  "label": "A1",
+  "row": "A",
+  "number": 1,
+  "type": "regular",
+  "extraPrice": 0
+}
+```
+
+### Create Showtime (Admin only)
+
+```bash
+POST /api/showtimes
+Authorization: Bearer <your-jwt-token>
+Content-Type: application/json
+
+{
+  "movieId": "movie-uuid-here",
+  "theaterId": "theater-uuid-here",
+  "startTime": "2025-11-09T14:00:00Z",
+  "endTime": "2025-11-09T16:30:00Z",
+  "price": 12.50
+}
+```
+
+### Get Showtimes with Filters
+
+```bash
+# Get all showtimes
+GET /api/showtimes
+
+# Filter by movie
+GET /api/showtimes?movieId=movie-uuid-here
+
+# Filter by date
+GET /api/showtimes?date=2025-11-09
+
+# Filter by both
+GET /api/showtimes?movieId=movie-uuid-here&date=2025-11-09
+```
+
+### Create Reservation
+
+```bash
+POST /api/reservations
+Authorization: Bearer <your-jwt-token>
+Content-Type: application/json
+
+{
+  "showtimeId": "showtime-uuid-here",
+  "seatIds": ["seat-uuid-1", "seat-uuid-2"]
+}
+```
+
+### Get User Reservations
+
+```bash
+GET /api/reservations
+Authorization: Bearer <your-jwt-token>
+```
+
+### Cancel Reservation
+
+```bash
+DELETE /api/reservations/{reservationId}
+Authorization: Bearer <your-jwt-token>
+```
+
 ## Database Schema
 
 The system includes the following models:
@@ -191,20 +279,32 @@ server/
 │   │   └── db.ts             # Prisma client configuration
 │   ├── controllers/          # Request handlers
 │   │   ├── auth.controller.ts
-│   │   └── movie.controller.ts
+│   │   ├── movie.controller.ts
+│   │   ├── theatres.controller.ts
+│   │   ├── showtimes.controller.ts
+│   │   └── reservations.controller.ts
 │   ├── middleware/           # Express middleware
 │   │   ├── auth.middleware.ts
 │   │   └── role.middleware.ts
 │   ├── routes/               # API routes
 │   │   ├── index.ts
 │   │   ├── auth.routes.ts
-│   │   └── movie.routes.ts
+│   │   ├── movie.routes.ts
+│   │   ├── theatres.routes.ts
+│   │   ├── showtimes.routes.ts
+│   │   └── reservations.routes.ts
 │   ├── schemas/              # Zod validation schemas
 │   │   ├── auth.schema.ts
-│   │   └── movie.schema.ts
+│   │   ├── movie.schema.ts
+│   │   ├── theater.schema.ts
+│   │   ├── showtime.schema.ts
+│   │   └── reservation.schema.ts
 │   ├── services/             # Business logic
 │   │   ├── auth.service.ts
-│   │   └── movie.service.ts
+│   │   ├── movie.service.ts
+│   │   ├── theaters.service.ts
+│   │   ├── showtimes.service.ts
+│   │   └── reservations.service.ts
 │   ├── types/                # TypeScript type definitions
 │   │   └── express.d.ts
 │   ├── utils/                # Utility functions
@@ -224,6 +324,9 @@ server/
 - Role-based access control for protected routes
 - Input validation using Zod schemas
 - SQL injection protection via Prisma ORM
+- Parameterized queries for raw SQL operations
+- Transaction-based seat booking to prevent race conditions
+- Row-level locking (FOR UPDATE) to prevent double-booking
 
 ## Development
 
@@ -243,9 +346,9 @@ npx prisma migrate reset
 
 ## Known Issues / TODO
 
-- [ ] Implement theater management endpoints
-- [ ] Implement showtime management endpoints
-- [ ] Implement seat reservation logic
+- [x] Implement theater management endpoints
+- [x] Implement showtime management endpoints
+- [x] Implement seat reservation logic
 - [ ] Add payment processing integration
 - [ ] Add email verification
 - [ ] Add refresh token mechanism
@@ -253,9 +356,15 @@ npx prisma migrate reset
 - [ ] Add comprehensive error handling
 - [ ] Add API documentation (Swagger)
 - [ ] Add unit and integration tests
-- [ ] Add logging system
-- [ ] Add seat availability checking
-- [ ] Add reservation expiry handling
+- [ ] Add logging system (Winston/Pino)
+- [ ] Add reservation expiry handling (cron job)
+- [ ] Add seat availability endpoint
+- [ ] Add pagination for list endpoints
+- [ ] Add search and filtering for movies
+- [ ] Add admin dashboard endpoints
+- [ ] Add booking history and analytics
+- [ ] Add email notifications for bookings
+- [ ] Add QR code generation for tickets
 
 ## Contributing
 
@@ -268,10 +377,23 @@ npx prisma migrate reset
 
 ISC
 
-## Author
-
-Your Name
-
 ---
 
-**Status**: 🚧 In Development
+**Status**: 🚀 **Core Features Complete!**
+
+### Implementation Progress: ~75%
+
+**Completed:**
+
+- ✅ Authentication & Authorization
+- ✅ Movie Management
+- ✅ Theater & Seat Management
+- ✅ Showtime Scheduling
+- ✅ Reservation System with Concurrency Control
+- ✅ Input Validation & Error Handling
+
+**In Progress:**
+
+- 🚧 Payment Integration
+- 🚧 Email Notifications
+- 🚧 Advanced Features (Analytics, QR Codes, etc.)

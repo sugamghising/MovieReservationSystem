@@ -7,6 +7,6 @@ const router = express.Router();
 
 router.post('/', requireAuth, requireRole('ADMIN'), createTheatre);
 router.get('/', listTheatre);
-router.post('/theatreId/seat', requireAuth, requireRole('ADMIN'), addSeat);
+router.post('/:theatreId/seat', requireAuth, requireRole('ADMIN'), addSeat);
 
 export default router;
