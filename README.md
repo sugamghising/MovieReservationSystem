@@ -10,6 +10,7 @@ A robust backend API for a movie reservation system built with Node.js, Express,
 - ✅ Theater Management (Create theaters, add seats)
 - ✅ Showtime Management (Create and list showtimes)
 - ✅ Seat Reservation System (Book seats, view reservations)
+- ✅ Admin Analytics Dashboard (Revenue, Occupancy, Popular Movies, Cancellations)
 - 🚧 Payment Processing (Coming soon)
 
 ## Tech Stack
@@ -108,6 +109,31 @@ The API will be available at `http://localhost:5000`
 - `POST /api/movies` - Create movie (Admin only)
 - `PUT /api/movies/:id` - Update movie (Admin only)
 - `DELETE /api/movies/:movieId` - Delete movie (Admin only)
+
+### Theaters
+
+- `GET /api/theatres` - Get all theaters (public)
+- `POST /api/theatres` - Create theater (Admin only)
+- `POST /api/theatres/:theatreId/seat` - Add seat to theater (Admin only)
+
+### Showtimes
+
+- `GET /api/showtimes` - Get all showtimes with optional filters (public)
+- `POST /api/showtimes` - Create showtime (Admin only)
+
+### Reservations
+
+- `POST /api/reservations` - Create reservation (Authenticated users)
+- `GET /api/reservations` - Get user's reservations (Authenticated users)
+- `DELETE /api/reservations/:id` - Cancel reservation (Authenticated users)
+
+### Analytics (Admin Only)
+
+- `GET /api/analytics/dashboard` - Get dashboard overview
+- `GET /api/analytics/revenue` - Get revenue report
+- `GET /api/analytics/occupancy` - Get occupancy report
+- `GET /api/analytics/popular-movies` - Get popular movies report
+- `GET /api/analytics/cancellations` - Get cancellation report
 
 ## API Usage Examples
 
@@ -246,6 +272,149 @@ DELETE /api/reservations/{reservationId}
 Authorization: Bearer <your-jwt-token>
 ```
 
+### Analytics - Dashboard Overview (Admin only)
+
+```bash
+GET /api/analytics/dashboard
+Authorization: Bearer <admin-jwt-token>
+```
+
+**Response:**
+
+```json
+{
+  "today": {
+    "reservations": 15,
+    "revenue": 450.00
+  },
+  "totals": {
+    "users": 250,
+    "movies": 12,
+    "theaters": 5,
+    "reservations": 1500,
+    "upcomingShowtimes": 45
+  },
+  "recentReservations": [...]
+}
+```
+
+### Analytics - Revenue Report (Admin only)
+
+```bash
+# All time revenue
+GET /api/analytics/revenue
+Authorization: Bearer <admin-jwt-token>
+
+# Revenue for date range
+GET /api/analytics/revenue?startDate=2025-11-01&endDate=2025-11-30
+Authorization: Bearer <admin-jwt-token>
+```
+
+**Response:**
+
+```json
+{
+  "summary": {
+    "totalRevenue": 15000.00,
+    "totalBookings": 500,
+    "averageBookingValue": 30.00,
+    "period": {...}
+  },
+  "revenueByMovie": [...],
+  "revenueByTheater": [...],
+  "revenueByDate": [...]
+}
+```
+
+### Analytics - Occupancy Report (Admin only)
+
+```bash
+# All time occupancy
+GET /api/analytics/occupancy
+Authorization: Bearer <admin-jwt-token>
+
+# Occupancy for date range
+GET /api/analytics/occupancy?startDate=2025-11-01&endDate=2025-11-30
+Authorization: Bearer <admin-jwt-token>
+```
+
+**Response:**
+
+```json
+{
+  "summary": {
+    "totalShowtimes": 200,
+    "averageOccupancy": 75.5,
+    "period": {...}
+  },
+  "showtimes": [...],
+  "occupancyByMovie": [...],
+  "occupancyByTheater": [...]
+}
+```
+
+### Analytics - Popular Movies (Admin only)
+
+```bash
+# Top 10 popular movies
+GET /api/analytics/popular-movies
+Authorization: Bearer <admin-jwt-token>
+
+# Top 5 popular movies for date range
+GET /api/analytics/popular-movies?limit=5&startDate=2025-11-01&endDate=2025-11-30
+Authorization: Bearer <admin-jwt-token>
+```
+
+**Response:**
+
+```json
+{
+  "summary": {
+    "totalUniqueMovies": 12,
+    "topMoviesCount": 10,
+    "period": {...}
+  },
+  "popularMovies": [
+    {
+      "movieId": "...",
+      "title": "Inception",
+      "totalBookings": 150,
+      "totalSeatsBooked": 300,
+      "totalRevenue": 4500.00
+    },
+    ...
+  ]
+}
+```
+
+### Analytics - Cancellation Report (Admin only)
+
+```bash
+# All time cancellations
+GET /api/analytics/cancellations
+Authorization: Bearer <admin-jwt-token>
+
+# Cancellations for date range
+GET /api/analytics/cancellations?startDate=2025-11-01&endDate=2025-11-30
+Authorization: Bearer <admin-jwt-token>
+```
+
+**Response:**
+
+```json
+{
+  "summary": {
+    "totalReservations": 500,
+    "totalCancellations": 50,
+    "cancellationRate": 10.00,
+    "lostRevenue": 1500.00,
+    "period": {...}
+  },
+  "cancellationsByMovie": [...],
+  "cancellationsByDate": [...]
+}
+```
+
 ## Database Schema
 
 The system includes the following models:
@@ -282,7 +451,8 @@ server/
 │   │   ├── movie.controller.ts
 │   │   ├── theatres.controller.ts
 │   │   ├── showtimes.controller.ts
-│   │   └── reservations.controller.ts
+│   │   ├── reservations.controller.ts
+│   │   └── analytics.controller.ts
 │   ├── middleware/           # Express middleware
 │   │   ├── auth.middleware.ts
 │   │   └── role.middleware.ts
@@ -292,7 +462,8 @@ server/
 │   │   ├── movie.routes.ts
 │   │   ├── theatres.routes.ts
 │   │   ├── showtimes.routes.ts
-│   │   └── reservations.routes.ts
+│   │   ├── reservations.routes.ts
+│   │   └── analytics.routes.ts
 │   ├── schemas/              # Zod validation schemas
 │   │   ├── auth.schema.ts
 │   │   ├── movie.schema.ts
@@ -304,7 +475,8 @@ server/
 │   │   ├── movie.service.ts
 │   │   ├── theaters.service.ts
 │   │   ├── showtimes.service.ts
-│   │   └── reservations.service.ts
+│   │   ├── reservations.service.ts
+│   │   └── analytics.service.ts
 │   ├── types/                # TypeScript type definitions
 │   │   └── express.d.ts
 │   ├── utils/                # Utility functions
@@ -328,6 +500,51 @@ server/
 - Transaction-based seat booking to prevent race conditions
 - Row-level locking (FOR UPDATE) to prevent double-booking
 
+## Analytics Dashboard Features
+
+### 📊 **Dashboard Overview**
+
+- Today's reservations and revenue
+- Total users, movies, theaters count
+- Total confirmed reservations
+- Upcoming showtimes count
+- Recent reservations list
+
+### 💰 **Revenue Analytics**
+
+- Total revenue and booking statistics
+- Average booking value
+- Revenue breakdown by movie
+- Revenue breakdown by theater
+- Daily revenue trends
+- Date range filtering
+
+### 📈 **Occupancy Analytics**
+
+- Average occupancy rates
+- Per-showtime occupancy details
+- Occupancy by movie
+- Occupancy by theater
+- Status indicators (full/filling/available)
+- Date range filtering
+
+### 🎬 **Popular Movies**
+
+- Top performing movies
+- Total bookings per movie
+- Total seats booked
+- Total revenue per movie
+- Customizable top N movies
+- Date range filtering
+
+### ❌ **Cancellation Analytics**
+
+- Total cancellation count and rate
+- Lost revenue from cancellations
+- Cancellations by movie
+- Daily cancellation trends
+- Date range filtering
+
 ## Development
 
 ### Database Management
@@ -349,6 +566,7 @@ npx prisma migrate reset
 - [x] Implement theater management endpoints
 - [x] Implement showtime management endpoints
 - [x] Implement seat reservation logic
+- [x] Add admin analytics dashboard
 - [ ] Add payment processing integration
 - [ ] Add email verification
 - [ ] Add refresh token mechanism
@@ -361,8 +579,7 @@ npx prisma migrate reset
 - [ ] Add seat availability endpoint
 - [ ] Add pagination for list endpoints
 - [ ] Add search and filtering for movies
-- [ ] Add admin dashboard endpoints
-- [ ] Add booking history and analytics
+- [ ] Add booking history and analytics export (CSV/PDF)
 - [ ] Add email notifications for bookings
 - [ ] Add QR code generation for tickets
 
@@ -381,7 +598,7 @@ ISC
 
 **Status**: 🚀 **Core Features Complete!**
 
-### Implementation Progress: ~75%
+### Implementation Progress: ~85%
 
 **Completed:**
 
@@ -391,9 +608,10 @@ ISC
 - ✅ Showtime Scheduling
 - ✅ Reservation System with Concurrency Control
 - ✅ Input Validation & Error Handling
+- ✅ **Admin Analytics Dashboard** 🆕
 
 **In Progress:**
 
 - 🚧 Payment Integration
 - 🚧 Email Notifications
-- 🚧 Advanced Features (Analytics, QR Codes, etc.)
+- 🚧 Advanced Features (QR Codes, Export Reports, etc.)

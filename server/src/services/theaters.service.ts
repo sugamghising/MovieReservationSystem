@@ -24,7 +24,7 @@ export const listTheatre = async () => {
     return theatres;
 }
 
-export const addSeat = async (theaterId: string, seatData: { label: string; row?: string | undefined; number?: number | undefined; type?: string | undefined; extraPrice?: number | undefined }) => {
+export const addSeat = async (theaterId: string, seatData: { label: string; row?: string | null; number?: number | null; type?: string | null; extraPrice?: number | null }) => {
     return prisma.seat.create({
         data: {
             theaterId,

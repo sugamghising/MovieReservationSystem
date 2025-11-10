@@ -27,14 +27,15 @@ export const createReservation = async (userId: string, showtimeId: string, seat
             throw new Error('Some seats do not belong in the theater');
         }
 
-        //looking for existing reservation seats 
-        const locked = await tx.$queryRaw<Array<{ id: string }>>`
-            SELECT id from "ReservationSeat"
-            WHERE "showtimeId" = ${showtimeId}::uuid 
-            AND "seatId" = ANY(${seatIds}::uuid[])
-            FOR UPDATE
-        `;
-        if (locked.length > 0) {
+        // Check for existing reservation seats using Prisma query instead of raw SQL
+        const existingReservationSeats = await tx.reservationSeat.findMany({
+            where: {
+                showtimeId: showtimeId,
+                seatId: { in: seatIds }
+            }
+        });
+
+        if (existingReservationSeats.length > 0) {
             throw new Error('One or more seats are already reserved');
         }
 
@@ -98,4 +99,12 @@ export const listUserReservation = async (userId: string) => {
         orderBy: { createdAt: 'desc' }
 
     })
+}
+
+
+export const getReservation = async (reservationId: string) => {
+    return prisma.reservation.findUnique({
+        where: { id: reservationId },
+        include: { seats: { include: { seat: true } }, showtime: { include: { movie: true, theater: true } } }
+    });
 }

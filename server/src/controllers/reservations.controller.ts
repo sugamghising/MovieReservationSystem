@@ -44,3 +44,15 @@ export const listUserReservation = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Internal Server Error", error: (error as Error).message });
     }
 }
+
+export const getReservation = async (req: Request, res: Response) => {
+    try {
+
+        const { id } = req.params as { id: string };
+        const reservation = await reservationsService.getReservation(id);
+        res.json({ success: true, reservation })
+    } catch (error) {
+        console.error("Error getting reservation:", error);
+        res.status(500).json({ message: "Internal Server Error", error: (error as Error).message });
+    }
+}

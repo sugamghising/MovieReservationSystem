@@ -1,13 +1,14 @@
 import express from "express";
 import { requireAuth } from "../middleware/auth.middleware";
-import { cancelReservation, createReservation, listUserReservation } from "../controllers/reservations.controller";
+import { cancelReservation, createReservation, getReservation, listUserReservation } from "../controllers/reservations.controller";
 
 
 const router = express.Router();
 
 router.post('/', requireAuth, createReservation);
-router.delete('/:id', requireAuth, cancelReservation);
+router.put('/:id', requireAuth, cancelReservation);
 router.get('/', requireAuth, listUserReservation);
+router.get('/:id', requireAuth, getReservation);
 
 
 export default router;

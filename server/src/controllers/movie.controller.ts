@@ -14,8 +14,8 @@ export const createMovie = async (req: Request, res: Response) => {
     try {
         const movie = await movieService.createMovie({
             title,
-            description,
-            posterUrl,
+            description: description ?? null,
+            posterUrl: posterUrl ?? null,
             genre,
             // map incoming durationMinute to Prisma's durationMin
             durationMin: durationMinute,
@@ -63,8 +63,8 @@ export const updateMovie = async (req: Request, res: Response) => {
 
         const movie = await movieService.updateMovie(id, {
             title,
-            description,
-            posterUrl,
+            description: description ?? null,
+            posterUrl: posterUrl ?? null,
             genre,
             durationMin: durationMinute,
         });

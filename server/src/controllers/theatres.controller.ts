@@ -14,7 +14,7 @@ export const createTheatre = async (req: Request, res: Response) => {
         if (!theater) {
             return res.status(401).json("Cannot create Theatre.");
         }
-        return res.status(201).json({ message: "Theatre Created successfully." })
+        return res.status(201).json({ message: "Theatre Created successfully.", theater: theater })
     } catch (error) {
         res.status(400).json({ error: (error as Error).message });
     }
@@ -40,7 +40,13 @@ export const addSeat = async (req: Request, res: Response) => {
     }
 
     const { theatreId } = req.params as { theatreId: string };
-    const seatData = parsed.data;
+    const seatData = {
+        ...parsed.data,
+        row: parsed.data.row ?? null,
+        number: parsed.data.number ?? null,
+        type: parsed.data.type ?? null,
+        extraPrice: parsed.data.extraPrice ?? null
+    };
 
     try {
         const seat = await theatreService.addSeat(theatreId, seatData);
