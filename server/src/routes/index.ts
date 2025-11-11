@@ -5,6 +5,7 @@ import theatresRoutes from './theatres.routes'
 import showtimesRoutes from './showtimes.routes';
 import reservationsRoutes from './reservations.routes'
 import analyticsRoutes from './analytic.routes'
+import paymentRoutes from './payment.routes'
 
 const router = Router();
 
@@ -15,5 +16,6 @@ router.use('/theatres', theatresRoutes)
 router.use('/showtimes', showtimesRoutes);
 router.use('/reservations', reservationsRoutes);
 router.use('/analytics', analyticsRoutes);
+router.use('/payments', paymentRoutes);
 
 export default router;
