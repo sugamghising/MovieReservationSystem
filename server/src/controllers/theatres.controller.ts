@@ -59,3 +59,15 @@ export const addSeat = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Internal Server Error", error: (error as Error).message });
     }
 }
+
+
+export const listSeat = async (req: Request, res: Response) => {
+    try {
+        const { theaterId } = req.params as { theaterId: string };
+        const seats = await theatreService.listSeat(theaterId);
+        res.status(200).json({ message: "Seats", seats })
+    } catch (error) {
+        console.error("Error adding seat:", error);
+        res.status(500).json({ message: "Internal Server Error", error: (error as Error).message });
+    }
+}

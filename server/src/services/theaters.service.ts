@@ -32,3 +32,10 @@ export const addSeat = async (theaterId: string, seatData: { label: string; row?
         }
     });
 }
+
+export const listSeat = async (theaterId: string) => {
+    return prisma.seat.findMany({
+        where: { theaterId: theaterId },
+        include: { theater: true }
+    })
+}

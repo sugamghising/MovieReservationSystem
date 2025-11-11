@@ -43,3 +43,85 @@ export const listShowtimes = async (filters?: { movieId?: string; date?: string 
     return prisma.showtime.findMany({ where, include: { movie: true, theater: true } });
 
 }
+
+
+export const getShowtimeByMovies = async (movieId: string) => {
+    const movies = await prisma.showtime.findMany({ where: { movieId: movieId } });
+    return movies;
+}
+
+export const updateShowtime = async (id: string, data:
+    {
+        movieId?: string,
+        theaterId?: string,
+        startTime?: Date | string,
+        endTime?: Date | string,
+        price?: number;
+    }
+) => {
+    return prisma.showtime.update({ where: { id }, data })
+}
+
+
+
+//available seats for showtimes
+export const availableSeats = async (id: string) => {
+    const showtime = await prisma.showtime.findUnique({
+        where: { id }, include: {
+            theater: {
+                include: {
+                    seats: true
+                }
+            },
+            reservations: {
+                where: {
+                    status: { in: ['BOOKED', 'HELD'] }
+                },
+                include: {
+                    seats: {
+                        include: {
+                            seat: true
+                        }
+                    }
+                }
+            }
+        }
+    }) as any;
+
+    if (!showtime) {
+        throw new Error('Showtime not Found')
+    }
+
+    const reservedSeatIds = new Set(
+        showtime.reservations.flatMap((reservation: any) =>
+            reservation.seats.map((rs: any) => rs.seatId)
+        )
+    );
+
+    const availableSeats = showtime.theater.seats.filter(
+        (seat: any) => !reservedSeatIds.has(seat.id)
+    );
+
+    return {
+        showtimeId: showtime.id,
+        movieTitle: showtime.movieId,
+        theaterName: showtime.theater.name,
+        totalSeats: showtime.theater.seats.length,
+        reservedSeats: reservedSeatIds.size,
+        availableSeatsCount: availableSeats.length,
+        availableSeats: availableSeats.map((seat: any) => ({
+            id: seat.id,
+            label: seat.label,
+            row: seat.row,
+            number: seat.number,
+            type: seat.type,
+            extraPrice: seat.extraPrice
+        }))
+    };
+}
+
+
+//delete showtimes
+export const deleteShowtime = async (id: string) => {
+    return prisma.showtime.delete({ where: { id } })
+}
