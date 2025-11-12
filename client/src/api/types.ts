@@ -28,8 +28,8 @@ export interface Movie {
     title: string;
     description: string;
     genre: string;
-    duration: number;
-    releaseDate: string;
+    durationMin: number;  // Changed from duration to match server schema
+    releaseDate?: string;  // Made optional since it's not in the server schema
     posterUrl: string | null;
     createdAt: string;
 }

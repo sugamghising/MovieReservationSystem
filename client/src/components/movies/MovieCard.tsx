@@ -10,12 +10,15 @@ interface MovieCardProps {
 }
 
 export default function MovieCard({ movie }: MovieCardProps) {
-  const formatDuration = (minutes: number | string) => {
-    const duration =
+  const formatDuration = (minutes: number | string | undefined) => {
+    // Convert to number and handle invalid values
+    const numMinutes =
       typeof minutes === "string" ? parseInt(minutes, 10) : minutes;
-    if (isNaN(duration)) return "N/A";
-    const hours = Math.floor(duration / 60);
-    const mins = duration % 60;
+    if (numMinutes == null || isNaN(numMinutes)) {
+      return "N/A";
+    }
+    const hours = Math.floor(numMinutes / 60);
+    const mins = numMinutes % 60;
     return `${hours}h ${mins}m`;
   };
 
@@ -55,7 +58,7 @@ export default function MovieCard({ movie }: MovieCardProps) {
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
             <Clock className="h-4 w-4" />
-            <span>{formatDuration(movie.duration)}</span>
+            <span>{formatDuration(movie.durationMin)}</span>
           </div>
           {movie.releaseDate && (
             <div className="flex items-center gap-1">

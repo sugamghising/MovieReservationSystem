@@ -120,7 +120,7 @@ export default function MovieDetailPage() {
                   <div>
                     <p className="text-sm text-muted-foreground">Duration</p>
                     <p className="font-semibold">
-                      {formatDuration(movie.duration)}
+                      {formatDuration(movie.durationMin)}
                     </p>
                   </div>
                 </div>
@@ -134,7 +134,9 @@ export default function MovieDetailPage() {
                       Release Date
                     </p>
                     <p className="font-semibold">
-                      {format(new Date(movie.releaseDate), "MMMM dd, yyyy")}
+                      {movie.releaseDate
+                        ? format(new Date(movie.releaseDate), "MMMM dd, yyyy")
+                        : "Not available"}
                     </p>
                   </div>
                 </div>

@@ -29,7 +29,8 @@ export const moviesApi = {
 
     getMovieById: async (id: string): Promise<{ movie: Movie }> => {
         const response = await apiClient.get(`/movies/${id}`);
-        return response.data;
+        // Server returns movie directly, so wrap it for consistency
+        return { movie: response.data };
     },
 
     // Admin endpoints

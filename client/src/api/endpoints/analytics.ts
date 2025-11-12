@@ -56,7 +56,16 @@ export const analyticsApi = {
     // Dashboard overview
     getDashboardOverview: async (): Promise<DashboardOverview> => {
         const response = await apiClient.get('/analytics/dashboard');
-        return response.data;
+        const data = response.data;
+
+        // Transform server response to match expected interface
+        return {
+            totalRevenue: data.today?.revenue || 0,
+            totalReservations: data.totals?.reservations || 0,
+            totalMovies: data.totals?.movies || 0,
+            totalTheaters: data.totals?.theaters || 0,
+            recentReservations: data.recentReservations || []
+        };
     },
 
     // Revenue report
@@ -68,13 +77,52 @@ export const analyticsApi = {
     // Occupancy report
     getOccupancyReport: async (params?: AnalyticsParams): Promise<OccupancyReport> => {
         const response = await apiClient.get('/analytics/occupancy', { params });
-        return response.data;
+        const data = response.data as {
+            summary?: { averageOccupancy?: number };
+            occupancyByTheater?: Array<{ theater: string; occupancyRate: number }>;
+        };
+
+        // Transform server response to match expected interface
+        // Use occupancyByTheater data to construct theater-level stats
+        const theaters = data.occupancyByTheater?.map((t) => ({
+            theaterId: t.theater || '',
+            theaterName: t.theater || '',
+            totalSeats: 0, // Not available in this endpoint
+            occupiedSeats: 0, // Not available in this endpoint
+            occupancyRate: t.occupancyRate || 0
+        })) || [];
+
+        return {
+            theaters,
+            overall: {
+                totalSeats: 0,
+                occupiedSeats: 0,
+                occupancyRate: data.summary?.averageOccupancy || 0
+            }
+        };
     },
 
     // Popular movies
     getPopularMovies: async (params?: AnalyticsParams): Promise<{ movies: PopularMovie[] }> => {
         const response = await apiClient.get('/analytics/popular-movies', { params });
-        return response.data;
+        const data = response.data as {
+            popularMovies?: Array<{
+                movieId: string;
+                title: string;
+                totalBookings: number;
+                totalRevenue: number;
+            }>;
+        };
+
+        // Transform server response to match expected interface
+        const movies = data.popularMovies?.map((m) => ({
+            movieId: m.movieId,
+            movieTitle: m.title,
+            totalReservations: m.totalBookings,
+            totalRevenue: m.totalRevenue
+        })) || [];
+
+        return { movies };
     },
 
     // Cancellations report
