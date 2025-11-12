@@ -28,8 +28,13 @@ export const createMovie = async (req: Request, res: Response) => {
 
 export const listMovie = async (req: Request, res: Response) => {
     try {
-        const movies = await movieService.listMovie();
-        res.json(movies);
+        const page = req.query.page ? parseInt(req.query.page as string) : undefined;
+        const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
+        const genre = req.query.genre as string | undefined;
+        const search = req.query.search as string | undefined;
+
+        const result = await movieService.listMovie(page, limit, genre, search);
+        res.json(result);
     } catch (error) {
         console.error("Error fetching movies:", error);
         res.status(500).json({ message: "Internal Server Error", error: (error as Error).message });

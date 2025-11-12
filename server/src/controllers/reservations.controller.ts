@@ -37,8 +37,12 @@ export const cancelReservation = async (req: Request, res: Response) => {
 export const listUserReservation = async (req: Request, res: Response) => {
     try {
         const userId = req.user!.userId;
-        const list = await reservationsService.listUserReservation(userId);
-        res.json(list);
+        const page = req.query.page ? parseInt(req.query.page as string) : undefined;
+        const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
+        const status = req.query.status as string | undefined;
+
+        const result = await reservationsService.listUserReservation(userId, page, limit, status);
+        res.json(result);
     } catch (error) {
         console.error("Error fetching user reservations:", error);
         res.status(500).json({ message: "Internal Server Error", error: (error as Error).message });

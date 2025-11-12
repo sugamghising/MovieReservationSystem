@@ -11,6 +11,8 @@ A robust backend API for a movie reservation system built with Node.js, Express,
 - ✅ Showtime Management (Create and list showtimes)
 - ✅ Seat Reservation System (Book seats, view reservations)
 - ✅ Admin Analytics Dashboard (Revenue, Occupancy, Popular Movies, Cancellations)
+- ✅ **API Rate Limiting** (Protection against abuse)
+- ✅ **Pagination** (Efficient data retrieval for all list endpoints)
 - 🚧 Payment Processing (Coming soon)
 
 ## Tech Stack
@@ -23,6 +25,7 @@ A robust backend API for a movie reservation system built with Node.js, Express,
 - **Authentication**: JWT (JSON Web Tokens)
 - **Password Hashing**: bcrypt
 - **Validation**: Zod
+- **Rate Limiting**: express-rate-limit
 
 ## Prerequisites
 
@@ -104,28 +107,54 @@ The API will be available at `http://localhost:5000`
 
 ### Movies
 
-- `GET /api/movies` - Get all movies (public)
+- `GET /api/movies` - Get all movies (public, paginated)
 - `GET /api/movies/:movieId` - Get single movie (public)
 - `POST /api/movies` - Create movie (Admin only)
 - `PUT /api/movies/:id` - Update movie (Admin only)
 - `DELETE /api/movies/:movieId` - Delete movie (Admin only)
 
+**Query Parameters for GET /api/movies:**
+
+- `page` - Page number (default: 1)
+- `limit` - Items per page (default: 20, max: 100)
+- `genre` - Filter by genre
+- `search` - Search in title and description
+
 ### Theaters
 
-- `GET /api/theatres` - Get all theaters (public)
+- `GET /api/theatres` - Get all theaters (public, paginated)
 - `POST /api/theatres` - Create theater (Admin only)
 - `POST /api/theatres/:theatreId/seat` - Add seat to theater (Admin only)
+- `GET /api/theatres/:theatreId/seat` - List seats in theater (Admin only, paginated)
+
+**Query Parameters for GET /api/theatres:**
+
+- `page` - Page number (default: 1)
+- `limit` - Items per page (default: 20, max: 100)
 
 ### Showtimes
 
-- `GET /api/showtimes` - Get all showtimes with optional filters (public)
+- `GET /api/showtimes` - Get all showtimes with optional filters (public, paginated)
 - `POST /api/showtimes` - Create showtime (Admin only)
+
+**Query Parameters for GET /api/showtimes:**
+
+- `page` - Page number (default: 1)
+- `limit` - Items per page (default: 20, max: 100)
+- `movieId` - Filter by movie ID
+- `date` - Filter by date (YYYY-MM-DD)
 
 ### Reservations
 
 - `POST /api/reservations` - Create reservation (Authenticated users)
-- `GET /api/reservations` - Get user's reservations (Authenticated users)
+- `GET /api/reservations` - Get user's reservations (Authenticated users, paginated)
 - `DELETE /api/reservations/:id` - Cancel reservation (Authenticated users)
+
+**Query Parameters for GET /api/reservations:**
+
+- `page` - Page number (default: 1)
+- `limit` - Items per page (default: 10, max: 100)
+- `status` - Filter by status (HELD, BOOKED, CANCELLED, EXPIRED)
 
 ### Analytics (Admin Only)
 
@@ -184,6 +213,42 @@ Content-Type: application/json
 GET /api/movies
 ```
 
+**With Pagination:**
+
+```bash
+# Get page 2 with 10 items per page
+GET /api/movies?page=2&limit=10
+
+# Filter by genre
+GET /api/movies?genre=Action&page=1&limit=20
+
+# Search movies
+GET /api/movies?search=spider&page=1
+```
+
+**Response:**
+
+```json
+{
+  "data": [
+    {
+      "id": "uuid",
+      "title": "Inception",
+      "genre": "Sci-Fi",
+      ...
+    }
+  ],
+  "meta": {
+    "currentPage": 2,
+    "itemsPerPage": 10,
+    "totalItems": 45,
+    "totalPages": 5,
+    "hasNextPage": true,
+    "hasPreviousPage": true
+  }
+}
+```
+
 ### Create Theater (Admin only)
 
 ```bash
@@ -232,17 +297,17 @@ Content-Type: application/json
 ### Get Showtimes with Filters
 
 ```bash
-# Get all showtimes
-GET /api/showtimes
+# Get all showtimes (paginated)
+GET /api/showtimes?page=1&limit=15
 
 # Filter by movie
-GET /api/showtimes?movieId=movie-uuid-here
+GET /api/showtimes?movieId=movie-uuid-here&page=1
 
 # Filter by date
-GET /api/showtimes?date=2025-11-09
+GET /api/showtimes?date=2025-11-09&page=1
 
 # Filter by both
-GET /api/showtimes?movieId=movie-uuid-here&date=2025-11-09
+GET /api/showtimes?movieId=movie-uuid-here&date=2025-11-09&page=1&limit=20
 ```
 
 ### Create Reservation
@@ -261,7 +326,12 @@ Content-Type: application/json
 ### Get User Reservations
 
 ```bash
-GET /api/reservations
+# Get all user reservations (paginated)
+GET /api/reservations?page=1&limit=10
+Authorization: Bearer <your-jwt-token>
+
+# Filter by status
+GET /api/reservations?status=BOOKED&page=1
 Authorization: Bearer <your-jwt-token>
 ```
 
@@ -499,6 +569,19 @@ server/
 - Parameterized queries for raw SQL operations
 - Transaction-based seat booking to prevent race conditions
 - Row-level locking (FOR UPDATE) to prevent double-booking
+- **API Rate Limiting** to prevent abuse and brute force attacks
+  - Authentication endpoints: 5 requests per 15 minutes
+  - Reservation endpoints: 20 requests per 15 minutes
+  - Payment endpoints: 10 requests per 15 minutes
+  - Admin endpoints: 50 requests per 15 minutes
+  - Public read endpoints: 200 requests per 15 minutes
+  - General API: 100 requests per 15 minutes
+  - [Full Rate Limiting Documentation](server/docs/RATE_LIMITING.md)
+- **Pagination** for efficient data retrieval
+  - Default: 20 items per page
+  - Maximum: 100 items per page
+  - Applied to all list endpoints
+  - [Full Pagination Documentation](server/docs/PAGINATION.md)
 
 ## Analytics Dashboard Features
 
@@ -567,17 +650,18 @@ npx prisma migrate reset
 - [x] Implement showtime management endpoints
 - [x] Implement seat reservation logic
 - [x] Add admin analytics dashboard
+- [x] **Add rate limiting**
+- [x] **Add pagination to list endpoints**
 - [ ] Add payment processing integration
 - [ ] Add email verification
 - [ ] Add refresh token mechanism
-- [ ] Add rate limiting
 - [ ] Add comprehensive error handling
 - [ ] Add API documentation (Swagger)
 - [ ] Add unit and integration tests
 - [ ] Add logging system (Winston/Pino)
 - [ ] Add reservation expiry handling (cron job)
 - [ ] Add seat availability endpoint
-- [ ] Add pagination for list endpoints
+- [ ] ~~Add pagination for list endpoints~~ ✅ **DONE**
 - [ ] Add search and filtering for movies
 - [ ] Add booking history and analytics export (CSV/PDF)
 - [ ] Add email notifications for bookings
@@ -598,7 +682,7 @@ ISC
 
 **Status**: 🚀 **Core Features Complete!**
 
-### Implementation Progress: ~85%
+### Implementation Progress: ~90%
 
 **Completed:**
 
@@ -608,7 +692,8 @@ ISC
 - ✅ Showtime Scheduling
 - ✅ Reservation System with Concurrency Control
 - ✅ Input Validation & Error Handling
-- ✅ **Admin Analytics Dashboard** 🆕
+- ✅ Admin Analytics Dashboard
+- ✅ **API Rate Limiting** 🆕
 
 **In Progress:**
 

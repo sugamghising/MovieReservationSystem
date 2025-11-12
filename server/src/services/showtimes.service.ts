@@ -1,4 +1,5 @@
 import prisma from "../config/db";
+import { createPaginatedResponse, getPaginationParams } from "../utils/pagination";
 
 export const createShowtime = async (data:
     {
@@ -30,7 +31,9 @@ export const createShowtime = async (data:
     return showtime;
 }
 
-export const listShowtimes = async (filters?: { movieId?: string; date?: string }) => {
+export const listShowtimes = async (filters?: { movieId?: string; date?: string; page?: number; limit?: number }) => {
+    const { skip, take, page: currentPage, limit: itemsPerPage } = getPaginationParams(filters?.page, filters?.limit);
+
     const where: any = {};
     if (filters?.movieId) where.movieId = filters.movieId;
     if (filters?.date) {
@@ -40,8 +43,20 @@ export const listShowtimes = async (filters?: { movieId?: string; date?: string 
         dayEnd.setDate(dayEnd.getDate() + 1);
         where.startTime = { gte: dayStart, lt: dayEnd };
     }
-    return prisma.showtime.findMany({ where, include: { movie: true, theater: true } });
 
+    // Get total count and paginated data
+    const [totalItems, showtimes] = await Promise.all([
+        prisma.showtime.count({ where }),
+        prisma.showtime.findMany({
+            where,
+            skip,
+            take,
+            include: { movie: true, theater: true },
+            orderBy: { startTime: 'asc' }
+        })
+    ]);
+
+    return createPaginatedResponse(showtimes, totalItems, currentPage, itemsPerPage);
 }
 
 

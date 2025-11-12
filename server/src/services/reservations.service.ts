@@ -1,5 +1,6 @@
 import prisma from "../config/db";
 import { Prisma } from "@prisma/client";
+import { createPaginatedResponse, getPaginationParams } from "../utils/pagination";
 
 type TransactionClient = Omit<typeof prisma, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'>;
 
@@ -92,13 +93,32 @@ export const cancelReservation = async (reservationId: string, userId: string, i
 }
 
 
-export const listUserReservation = async (userId: string) => {
-    return prisma.reservation.findMany({
-        where: { userId },
-        include: { seats: { include: { seat: true } }, showtime: { include: { movie: true, theater: true } } },
-        orderBy: { createdAt: 'desc' }
+export const listUserReservation = async (userId: string, page?: number, limit?: number, status?: string) => {
+    const { skip, take, page: currentPage, limit: itemsPerPage } = getPaginationParams(page, limit);
 
-    })
+    // Build where clause
+    const where: any = { userId };
+
+    if (status && ['HELD', 'BOOKED', 'CANCELLED', 'EXPIRED'].includes(status)) {
+        where.status = status;
+    }
+
+    // Get total count and paginated data
+    const [totalItems, reservations] = await Promise.all([
+        prisma.reservation.count({ where }),
+        prisma.reservation.findMany({
+            where,
+            skip,
+            take,
+            include: {
+                seats: { include: { seat: true } },
+                showtime: { include: { movie: true, theater: true } }
+            },
+            orderBy: { createdAt: 'desc' }
+        })
+    ]);
+
+    return createPaginatedResponse(reservations, totalItems, currentPage, itemsPerPage);
 }
 
 

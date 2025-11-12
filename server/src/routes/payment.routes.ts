@@ -2,6 +2,7 @@ import express from "express";
 import { requireAuth } from "../middleware/auth.middleware";
 import { confirmPayment, createPaymentIntent, getPayment, getPaymentByReservation, handleWebhook, refundPayment } from "../controllers/payment.controller";
 import { createPaymentSchema, refundPaymentSchema } from "../schemas/payment.schema";
+import { paymentLimiter, webhookLimiter } from '../middleware/rate-limit.middleware';
 
 const router = express.Router();
 
@@ -12,14 +13,16 @@ const router = express.Router();
 /**
  * POST /api/payments/create-intent
  * Create payment intent for a reservation
+ * Rate limited: 10 requests per 15 minutes
  */
-router.post('/create-intent', requireAuth, validateRequest(createPaymentSchema), createPaymentIntent);
+router.post('/create-intent', paymentLimiter, requireAuth, validateRequest(createPaymentSchema), createPaymentIntent);
 
 /**
  * POST /api/payments/:paymentId/confirm
  * Manually confirm payment status
+ * Rate limited: 10 requests per 15 minutes
  */
-router.post('/:paymentId/confirm', requireAuth, confirmPayment);
+router.post('/:paymentId/confirm', paymentLimiter, requireAuth, confirmPayment);
 
 /**
  * GET /api/payments/:paymentId
@@ -36,8 +39,9 @@ router.get('/reservation/:reservationId', requireAuth, getPaymentByReservation);
 /**
  * POST /api/payments/:paymentId/refund
  * Request refund for a payment
+ * Rate limited: 10 requests per 15 minutes
  */
-router.post('/:paymentId/refund', requireAuth, validateRequest(refundPaymentSchema), refundPayment);
+router.post('/:paymentId/refund', paymentLimiter, requireAuth, validateRequest(refundPaymentSchema), refundPayment);
 
 // ==========================================
 // PUBLIC ROUTES (No Authentication)
@@ -46,9 +50,10 @@ router.post('/:paymentId/refund', requireAuth, validateRequest(refundPaymentSche
 /**
  * POST /api/payments/webhook
  * Stripe webhook endpoint
+ * Rate limited: 100 requests per hour
  * Note: This route needs raw body, handled separately in index.ts
  */
-router.post('/webhook', handleWebhook);
+router.post('/webhook', webhookLimiter, handleWebhook);
 
 export default router;
 

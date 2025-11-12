@@ -1,4 +1,5 @@
 import prisma from '../config/db'
+import { createPaginatedResponse, getPaginationParams } from '../utils/pagination';
 
 export const createTheatre = async (name: string, capacity: number) => {
 
@@ -16,12 +17,25 @@ export const createTheatre = async (name: string, capacity: number) => {
 
 }
 
-export const listTheatre = async () => {
-    const theatres = await prisma.theater.findMany({ include: { seats: true } })
+export const listTheatre = async (page?: number, limit?: number) => {
+    const { skip, take, page: currentPage, limit: itemsPerPage } = getPaginationParams(page, limit);
+
+    // Get total count and paginated data
+    const [totalItems, theatres] = await Promise.all([
+        prisma.theater.count(),
+        prisma.theater.findMany({
+            skip,
+            take,
+            include: { seats: true },
+            orderBy: { name: 'asc' }
+        })
+    ]);
+
     if (!theatres) {
         throw new Error('Failed to get theatres.')
     }
-    return theatres;
+
+    return createPaginatedResponse(theatres, totalItems, currentPage, itemsPerPage);
 }
 
 export const addSeat = async (theaterId: string, seatData: { label: string; row?: string | null; number?: number | null; type?: string | null; extraPrice?: number | null }) => {
@@ -33,9 +47,20 @@ export const addSeat = async (theaterId: string, seatData: { label: string; row?
     });
 }
 
-export const listSeat = async (theaterId: string) => {
-    return prisma.seat.findMany({
-        where: { theaterId: theaterId },
-        include: { theater: true }
-    })
+export const listSeat = async (theaterId: string, page?: number, limit?: number) => {
+    const { skip, take, page: currentPage, limit: itemsPerPage } = getPaginationParams(page, limit);
+
+    // Get total count and paginated data
+    const [totalItems, seats] = await Promise.all([
+        prisma.seat.count({ where: { theaterId } }),
+        prisma.seat.findMany({
+            where: { theaterId },
+            skip,
+            take,
+            include: { theater: true },
+            orderBy: [{ row: 'asc' }, { number: 'asc' }]
+        })
+    ]);
+
+    return createPaginatedResponse(seats, totalItems, currentPage, itemsPerPage);
 }

@@ -3,21 +3,28 @@ import dotenv from 'dotenv'
 import cors from 'cors'
 import morgan from 'morgan'
 import routes from './routes'
+import { generalLimiter } from './middleware/rate-limit.middleware'
 
 const app = express();
 dotenv.config();
 
 const PORT = process.env.PORT || 5000
 
+// Webhook route MUST come before body parsers and rate limiting
 app.post(
     "/api/payments/webhook",
     express.raw({ type: "application/json" }),
     routes
 );
+
+// Apply general middleware
 app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'))
+
+// Apply general rate limiting to all routes
+app.use(generalLimiter)
 
 // Health check endpoint
 app.get('/', async (_req, res) => {

@@ -33,19 +33,18 @@ export const createShowtime = async (req: Request, res: Response) => {
 }
 //list all showtimes
 export const listShowtimes = async (req: Request, res: Response) => {
-    const { movieId, date } = req.query as { movieId?: string; date?: string };
+    const { movieId, date, page, limit } = req.query as { movieId?: string; date?: string; page?: string; limit?: string };
 
     try {
-        // Build filters object only with defined values
-        const filters: { movieId?: string; date?: string } = {};
+        // Build filters object with pagination
+        const filters: { movieId?: string; date?: string; page?: number; limit?: number } = {};
         if (movieId) filters.movieId = movieId;
         if (date) filters.date = date;
+        if (page) filters.page = parseInt(page);
+        if (limit) filters.limit = parseInt(limit);
 
-        const showtimes = await showtimeService.listShowtimes(filters);
-        if (!showtimes || showtimes.length === 0) {
-            return res.status(404).json({ message: "No showtimes found." })
-        }
-        return res.json(showtimes);
+        const result = await showtimeService.listShowtimes(filters);
+        return res.json(result);
     } catch (error) {
         console.error("Error fetching showtimes:", error);
         res.status(500).json({ message: "Internal Server Error", error: (error as Error).message });

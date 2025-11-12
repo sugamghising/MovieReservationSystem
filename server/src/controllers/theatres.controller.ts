@@ -23,11 +23,11 @@ export const createTheatre = async (req: Request, res: Response) => {
 
 export const listTheatre = async (req: Request, res: Response) => {
     try {
-        const theaters = await theatreService.listTheatre();
-        if (!theaters) {
-            return res.status(404).json({ message: "Cannot find theatre." })
-        }
-        return res.status(200).json(theaters)
+        const page = req.query.page ? parseInt(req.query.page as string) : undefined;
+        const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
+
+        const result = await theatreService.listTheatre(page, limit);
+        return res.status(200).json(result);
     } catch (error) {
         res.status(400).json({ error: (error as Error).message });
     }
@@ -64,10 +64,13 @@ export const addSeat = async (req: Request, res: Response) => {
 export const listSeat = async (req: Request, res: Response) => {
     try {
         const { theaterId } = req.params as { theaterId: string };
-        const seats = await theatreService.listSeat(theaterId);
-        res.status(200).json({ message: "Seats", seats })
+        const page = req.query.page ? parseInt(req.query.page as string) : undefined;
+        const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
+
+        const result = await theatreService.listSeat(theaterId, page, limit);
+        res.status(200).json(result);
     } catch (error) {
-        console.error("Error adding seat:", error);
+        console.error("Error listing seats:", error);
         res.status(500).json({ message: "Internal Server Error", error: (error as Error).message });
     }
 }
