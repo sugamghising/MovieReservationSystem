@@ -26,9 +26,11 @@ export const QUERY_KEYS = {
     SHOWTIMES: 'showtimes',
     SHOWTIME_DETAIL: 'showtime-detail',
     AVAILABLE_SEATS: 'available-seats',
+    SEATS: 'seats',
     RESERVATIONS: 'reservations',
     RESERVATION_DETAIL: 'reservation-detail',
     THEATERS: 'theaters',
+    PAYMENT: 'payment',
     ANALYTICS: 'analytics',
 } as const;
 
