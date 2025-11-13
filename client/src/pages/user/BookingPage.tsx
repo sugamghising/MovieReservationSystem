@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,14 +8,17 @@ import SeatMap from "@/components/booking/SeatMap";
 import BookingSummary from "@/components/booking/BookingSummary";
 import { useBookingStore } from "@/store";
 import { useAvailableSeats } from "@/hooks/useShowtimes";
+import { useCreateReservation } from "@/hooks/useReservations";
 import { Skeleton } from "@/components/ui/skeleton";
 import EmptyState from "@/components/common/EmptyState";
 import { Ticket } from "lucide-react";
 import type { Seat } from "@/types/models";
 import type { Seat as ApiSeat } from "@/api/types";
+import { toast } from "react-hot-toast";
 
 export default function BookingPage() {
   const navigate = useNavigate();
+  const [isCreatingReservation, setIsCreatingReservation] = useState(false);
   const {
     movie,
     showtime,
@@ -27,10 +30,12 @@ export default function BookingPage() {
     calculateTotalPrice,
     nextStep,
     previousStep,
+    setReservationId,
   } = useBookingStore();
 
   // Fetch available seats for the showtime
   const { data: seatsData, isLoading } = useAvailableSeats(showtime?.id || "");
+  const createReservation = useCreateReservation();
 
   // Transform API seats to extended seats with computed properties
   const seats: Seat[] = useMemo(
@@ -81,12 +86,38 @@ export default function BookingPage() {
     }
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (selectedSeats.length === 0) {
       return;
     }
-    nextStep();
-    navigate("/checkout");
+
+    if (!showtime?.id) {
+      toast.error("Invalid showtime selected");
+      return;
+    }
+
+    setIsCreatingReservation(true);
+
+    try {
+      // Create reservation with showtime and selected seat IDs (as strings/UUIDs)
+      const seatIds = selectedSeats.map((seat) => seat.id);
+      const response = await createReservation.mutateAsync({
+        showtimeId: showtime.id,
+        seatIds: seatIds,
+      });
+
+      // Store the reservation ID in booking store
+      setReservationId(response.reservation.id);
+
+      // Move to next step and navigate to checkout/payment
+      nextStep();
+      navigate("/checkout");
+    } catch (error) {
+      toast.error("Failed to create reservation. Please try again.");
+      console.error("Reservation creation error:", error);
+    } finally {
+      setIsCreatingReservation(false);
+    }
   };
 
   const steps = [
@@ -211,16 +242,26 @@ export default function BookingPage() {
                   size="lg"
                   className="w-full"
                   onClick={handleContinue}
-                  disabled={selectedSeats.length === 0}
+                  disabled={selectedSeats.length === 0 || isCreatingReservation}
                 >
-                  Continue to Payment
-                  <ArrowRight className="h-4 w-4 ml-2" />
+                  {isCreatingReservation ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />
+                      Creating Reservation...
+                    </>
+                  ) : (
+                    <>
+                      Create Reservation & Continue
+                      <ArrowRight className="h-4 w-4 ml-2" />
+                    </>
+                  )}
                 </Button>
                 <Button
                   size="lg"
                   variant="outline"
                   className="w-full"
                   onClick={previousStep}
+                  disabled={isCreatingReservation}
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back

@@ -99,7 +99,7 @@ export default function ReservationCard({
                     key={rs.seat.id}
                     className="px-2 py-1 bg-primary/10 text-primary rounded text-sm"
                   >
-                    {rs.seat.seatNumber}
+                    {rs.seat.label}
                   </span>
                 ))}
               </div>

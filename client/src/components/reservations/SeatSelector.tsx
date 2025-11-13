@@ -39,7 +39,7 @@ export default function SeatSelector({
 
   // Group seats by row
   const seatsByRow = seats.reduce((acc, seat) => {
-    const row = seat.rowLabel;
+    const row = seat.row || "Unknown";
     if (!acc[row]) {
       acc[row] = [];
     }
@@ -137,7 +137,7 @@ export default function SeatSelector({
               <div className="w-8 text-center font-semibold text-sm">{row}</div>
               <div className="flex flex-wrap gap-2 flex-1 justify-center">
                 {seatsByRow[row]
-                  .sort((a, b) => a.seatNumber.localeCompare(b.seatNumber))
+                  .sort((a, b) => (a.label || "").localeCompare(b.label || ""))
                   .map((seat) => {
                     const status = getSeatStatus(seat);
                     const seatId = parseInt(seat.id);
@@ -152,12 +152,14 @@ export default function SeatSelector({
                           status === "selected" &&
                             "ring-2 ring-primary ring-offset-2"
                         )}
-                        title={`Row ${seat.rowLabel}, Seat ${seat.seatNumber} - ${seat.seatType}`}
+                        title={`Row ${seat.row || "N/A"}, Seat ${
+                          seat.label
+                        } - ${seat.type || "Standard"}`}
                       >
                         {status === "selected" ? (
                           <CheckCircle2 className="h-4 w-4" />
                         ) : (
-                          seat.seatNumber.split("-")[1] || seat.seatNumber
+                          seat.number || seat.label
                         )}
                       </button>
                     );
@@ -184,7 +186,8 @@ export default function SeatSelector({
                     key={seatId}
                     className="px-2 py-1 bg-primary/10 text-primary rounded text-xs font-medium"
                   >
-                    {seat.rowLabel}-{seat.seatNumber}
+                    {seat.row || ""}
+                    {seat.number || seat.label}
                   </span>
                 ) : null;
               })}

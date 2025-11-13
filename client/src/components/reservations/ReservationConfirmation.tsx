@@ -158,7 +158,8 @@ export default function ReservationConfirmation({
                           key={rs.seat.id}
                           className="px-3 py-1.5 bg-primary/10 text-primary rounded-md font-medium text-sm"
                         >
-                          {rs.seat.rowLabel}-{rs.seat.seatNumber}
+                          {rs.seat.row || ""}
+                          {rs.seat.number || rs.seat.label}
                         </span>
                       ))}
                     </div>

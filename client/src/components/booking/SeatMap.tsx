@@ -16,7 +16,7 @@ export default function SeatMap({
 }: SeatMapProps) {
   // Group seats by row
   const seatsByRow = seats.reduce((acc, seat) => {
-    const row = seat.row;
+    const row = seat.row || "Unknown";
     if (!acc[row]) {
       acc[row] = [];
     }
@@ -85,7 +85,7 @@ export default function SeatMap({
             </span>
             <div className="flex gap-2 flex-wrap justify-center">
               {seatsByRow[row]
-                .sort((a, b) => a.number - b.number)
+                .sort((a, b) => (a.number || 0) - (b.number || 0))
                 .map((seat) => {
                   const status = getSeatStatus(seat);
                   return (
@@ -102,7 +102,7 @@ export default function SeatMap({
                           : "Available"
                       }`}
                     >
-                      {seat.number}
+                      {seat.number || seat.label}
                     </button>
                   );
                 })}

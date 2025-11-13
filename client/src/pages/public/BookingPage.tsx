@@ -36,16 +36,11 @@ export default function BookingPage() {
   const seats: Seat[] = useMemo(
     () =>
       (seatsData?.seats || []).map((seat: ApiSeat) => {
-        // Extract row letter and seat number from seatNumber (e.g., "A1" -> row: "A", number: 1)
-        const match = seat.seatNumber.match(/^([A-Z]+)(\d+)$/);
-        const row = match ? match[1] : seat.rowLabel;
-        const number = match ? parseInt(match[2], 10) : 0;
-
         return {
           ...seat,
-          row,
-          number,
-          status: "AVAILABLE" as const, // Default status, should come from API
+          row: seat.row || "",
+          number: seat.number || 0,
+          status: "AVAILABLE" as const,
         };
       }),
     [seatsData]
@@ -78,9 +73,9 @@ export default function BookingPage() {
     } else {
       addSeat({
         id: seat.id,
-        row: seat.row,
-        number: seat.number,
-        seatNumber: seat.seatNumber,
+        row: seat.row || "",
+        number: seat.number || 0,
+        seatNumber: seat.label, // Use label as seatNumber
         price: showtime.price,
       });
     }

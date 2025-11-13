@@ -9,7 +9,7 @@ export interface GetReservationsParams {
 
 export interface CreateReservationRequest {
     showtimeId: string;
-    seatIds: number[];
+    seatIds: string[];
 }
 
 export const reservationsApi = {

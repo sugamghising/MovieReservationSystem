@@ -114,7 +114,8 @@ export default function ReservationSummary({
                     key={seat.id}
                     className="px-2 py-1 bg-primary/10 text-primary rounded text-xs font-medium"
                   >
-                    {seat.rowLabel}-{seat.seatNumber}
+                    {seat.row || ""}
+                    {seat.number || seat.label}
                   </span>
                 ))}
               </div>

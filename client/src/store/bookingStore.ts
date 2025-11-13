@@ -61,13 +61,12 @@ export const useBookingStore = create<BookingState>((set, get) => ({
 
     // Set movie
     setMovie: (movie) => {
-        set({ movie });
+        set({ movie, selectedSeats: [], totalPrice: 0 });
     },
 
     // Set showtime
     setShowtime: (showtime) => {
-        set({ showtime });
-        get().calculateTotalPrice();
+        set({ showtime, selectedSeats: [], totalPrice: 0 });
     },
 
     // Add seat to selection

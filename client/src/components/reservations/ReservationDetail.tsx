@@ -203,10 +203,10 @@ export default function ReservationDetail({
                         key={rs.seat.id}
                         className="px-4 py-2 bg-primary/10 text-primary rounded-lg font-medium"
                       >
-                        <p className="text-sm">Row {rs.seat.rowLabel}</p>
-                        <p className="text-lg">{rs.seat.seatNumber}</p>
+                        <p className="text-sm">Row {rs.seat.row || "N/A"}</p>
+                        <p className="text-lg">{rs.seat.label}</p>
                         <p className="text-xs text-muted-foreground">
-                          {rs.seat.seatType}
+                          {rs.seat.type || "Standard"}
                         </p>
                       </div>
                     ))}
