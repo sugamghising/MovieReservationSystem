@@ -277,12 +277,12 @@ export default function MoviesManagementPage() {
 
         {/* Movie Dialog */}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl bg-zinc-900 border-zinc-800">
             <DialogHeader>
-              <DialogTitle>
+              <DialogTitle className="text-2xl text-white">
                 {editingMovie ? "Edit Movie" : "Add New Movie"}
               </DialogTitle>
-              <DialogDescription>
+              <DialogDescription className="text-zinc-400">
                 {editingMovie
                   ? "Update the movie details below"
                   : "Fill in the details to add a new movie"}
@@ -291,8 +291,8 @@ export default function MoviesManagementPage() {
             <form onSubmit={handleSubmit}>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="title">
-                    Title <span className="text-destructive">*</span>
+                  <Label htmlFor="title" className="text-white font-semibold">
+                    Title <span className="text-rose-500">*</span>
                   </Label>
                   <Input
                     id="title"
@@ -301,12 +301,18 @@ export default function MoviesManagementPage() {
                       setFormData({ ...formData, title: e.target.value })
                     }
                     placeholder="Enter movie title"
+                    className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500"
                     required
                   />
                 </div>
 
                 <div className="grid gap-2">
-                  <Label htmlFor="description">Description</Label>
+                  <Label
+                    htmlFor="description"
+                    className="text-white font-semibold"
+                  >
+                    Description
+                  </Label>
                   <Textarea
                     id="description"
                     value={formData.description}
@@ -314,14 +320,15 @@ export default function MoviesManagementPage() {
                       setFormData({ ...formData, description: e.target.value })
                     }
                     placeholder="Enter movie description"
+                    className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500"
                     rows={4}
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label htmlFor="genre">
-                      Genre <span className="text-destructive">*</span>
+                    <Label htmlFor="genre" className="text-white font-semibold">
+                      Genre <span className="text-rose-500">*</span>
                     </Label>
                     <Input
                       id="genre"
@@ -330,14 +337,18 @@ export default function MoviesManagementPage() {
                         setFormData({ ...formData, genre: e.target.value })
                       }
                       placeholder="e.g. Action, Drama"
+                      className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500"
                       required
                     />
                   </div>
 
                   <div className="grid gap-2">
-                    <Label htmlFor="durationMinute">
+                    <Label
+                      htmlFor="durationMinute"
+                      className="text-white font-semibold"
+                    >
                       Duration (minutes){" "}
-                      <span className="text-destructive">*</span>
+                      <span className="text-rose-500">*</span>
                     </Label>
                     <Input
                       id="durationMinute"
@@ -351,13 +362,19 @@ export default function MoviesManagementPage() {
                         })
                       }
                       placeholder="120"
+                      className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500"
                       required
                     />
                   </div>
                 </div>
 
                 <div className="grid gap-2">
-                  <Label htmlFor="posterUrl">Poster URL</Label>
+                  <Label
+                    htmlFor="posterUrl"
+                    className="text-white font-semibold"
+                  >
+                    Poster URL
+                  </Label>
                   <Input
                     id="posterUrl"
                     value={formData.posterUrl}
@@ -365,21 +382,24 @@ export default function MoviesManagementPage() {
                       setFormData({ ...formData, posterUrl: e.target.value })
                     }
                     placeholder="https://example.com/poster.jpg"
+                    className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500"
                   />
                 </div>
               </div>
 
-              <DialogFooter>
+              <DialogFooter className="gap-2">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={handleCloseDialog}
+                  className="border-zinc-700 bg-zinc-800 text-white hover:bg-zinc-700"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={createMovie.isPending || updateMovie.isPending}
+                  className="bg-rose-600 hover:bg-rose-700 text-white"
                 >
                   {createMovie.isPending || updateMovie.isPending
                     ? "Saving..."

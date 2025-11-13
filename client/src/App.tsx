@@ -24,6 +24,9 @@ import ProfilePage from "./pages/user/ProfilePage";
 // Admin pages
 import DashboardPage from "./pages/admin/DashboardPage";
 import MoviesManagementPage from "./pages/admin/MoviesManagementPage";
+import ShowtimesManagementPage from "./pages/admin/ShowtimesManagementPage";
+import TheatersManagementPage from "./pages/admin/TheatersManagementPage";
+import AnalyticsPage from "./pages/admin/AnalyticsPage";
 
 // Components
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -88,7 +91,15 @@ function App() {
               path={ROUTES.ADMIN_MOVIES}
               element={<MoviesManagementPage />}
             />
-            {/* Add other admin routes */}
+            <Route
+              path={ROUTES.ADMIN_SHOWTIMES}
+              element={<ShowtimesManagementPage />}
+            />
+            <Route
+              path={ROUTES.ADMIN_THEATERS}
+              element={<TheatersManagementPage />}
+            />
+            <Route path={ROUTES.ADMIN_ANALYTICS} element={<AnalyticsPage />} />
           </Route>
 
           {/* 404 */}
