@@ -10,6 +10,7 @@ import AdminLayout from "./components/layout/AdminLayout";
 import HomePage from "./pages/public/HomePage";
 import MoviesPage from "./pages/public/MoviesPage";
 import MovieDetailPage from "./pages/public/MovieDetailPage";
+import ShowtimesPage from "./pages/public/ShowtimesPage";
 import LoginPage from "./pages/public/LoginPage";
 import RegisterPage from "./pages/public/RegisterPage";
 
@@ -48,6 +49,7 @@ function App() {
             <Route path={ROUTES.HOME} element={<HomePage />} />
             <Route path={ROUTES.MOVIES} element={<MoviesPage />} />
             <Route path={ROUTES.MOVIE_DETAIL} element={<MovieDetailPage />} />
+            <Route path={ROUTES.SHOWTIMES} element={<ShowtimesPage />} />
             <Route path={ROUTES.LOGIN} element={<LoginPage />} />
             <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
           </Route>

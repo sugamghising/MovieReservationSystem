@@ -41,6 +41,12 @@ export default function Header() {
             >
               Movies
             </Link>
+            <Link
+              to={ROUTES.SHOWTIMES}
+              className="text-sm font-medium transition-colors hover:text-primary"
+            >
+              Showtimes
+            </Link>
             {isAuthenticated && (
               <Link
                 to={ROUTES.MY_RESERVATIONS}
@@ -134,6 +140,13 @@ export default function Header() {
               onClick={() => setMobileMenuOpen(false)}
             >
               Movies
+            </Link>
+            <Link
+              to={ROUTES.SHOWTIMES}
+              className="block py-2 text-sm font-medium"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Showtimes
             </Link>
             {isAuthenticated && (
               <>

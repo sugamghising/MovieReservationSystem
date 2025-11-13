@@ -12,8 +12,7 @@ export interface CreateMovieRequest {
     title: string;
     description: string;
     genre: string;
-    duration: number;
-    releaseDate: string;
+    durationMinute: number;  // Server expects durationMinute, not duration
     posterUrl: string;
     rating?: number;
 }

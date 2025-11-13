@@ -5,6 +5,7 @@ export const ROUTES = {
     HOME: '/',
     MOVIES: '/movies',
     MOVIE_DETAIL: '/movies/:id',
+    SHOWTIMES: '/showtimes',
     LOGIN: '/login',
     REGISTER: '/register',
     BOOKING: '/booking/:showtimeId',
