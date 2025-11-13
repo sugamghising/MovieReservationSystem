@@ -38,23 +38,23 @@ export default function SeatMap({
 
   const getSeatStyles = (status: string) => {
     const baseStyles =
-      "w-8 h-8 md:w-10 md:h-10 rounded-t-lg border-2 transition-all duration-200 flex items-center justify-center text-xs font-semibold";
+      "w-9 h-9 md:w-11 md:h-11 rounded-t-xl border-2 transition-all duration-200 flex items-center justify-center text-xs font-bold shadow-md relative";
 
     switch (status) {
       case "selected":
         return cn(
           baseStyles,
-          "bg-primary border-primary text-primary-foreground cursor-pointer hover:scale-110"
+          "bg-gradient-to-b from-rose-500 to-rose-600 border-rose-600 text-white cursor-pointer hover:scale-110 shadow-lg shadow-rose-500/50 animate-in zoom-in-50"
         );
       case "unavailable":
         return cn(
           baseStyles,
-          "bg-muted border-muted text-muted-foreground cursor-not-allowed opacity-50"
+          "bg-muted border-muted text-muted-foreground cursor-not-allowed opacity-40"
         );
       default:
         return cn(
           baseStyles,
-          "bg-background border-border hover:border-primary cursor-pointer hover:scale-110"
+          "bg-gradient-to-b from-background to-muted/30 border-border hover:border-primary cursor-pointer hover:scale-110 hover:shadow-lg hover:shadow-primary/30"
         );
     }
   };
@@ -67,20 +67,27 @@ export default function SeatMap({
   };
 
   return (
-    <div className="space-y-6">
-      {/* Screen */}
-      <div className="flex flex-col items-center gap-2 mb-8">
-        <div className="w-full max-w-2xl h-2 bg-gradient-to-b from-gray-400 to-gray-200 rounded-b-3xl shadow-lg" />
-        <span className="text-sm text-muted-foreground font-medium">
-          SCREEN
-        </span>
+    <div className="space-y-8">
+      {/* Enhanced Screen */}
+      <div className="flex flex-col items-center gap-3 mb-10">
+        <div className="relative w-full max-w-3xl">
+          <div className="h-3 bg-gradient-to-b from-gray-400 via-gray-300 to-gray-200 rounded-b-[3rem] shadow-2xl" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-b-[3rem]" />
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="h-px w-8 bg-gradient-to-r from-transparent to-muted-foreground" />
+          <span className="text-sm text-muted-foreground font-semibold tracking-widest uppercase">
+            Screen
+          </span>
+          <div className="h-px w-8 bg-gradient-to-l from-transparent to-muted-foreground" />
+        </div>
       </div>
 
-      {/* Seat Grid */}
-      <div className="space-y-3">
+      {/* Enhanced Seat Grid */}
+      <div className="space-y-4">
         {rows.map((row) => (
-          <div key={row} className="flex items-center justify-center gap-2">
-            <span className="w-6 text-sm font-semibold text-muted-foreground">
+          <div key={row} className="flex items-center justify-center gap-3">
+            <span className="w-8 text-center text-sm font-bold text-muted-foreground bg-muted/30 rounded px-2 py-1">
               {row}
             </span>
             <div className="flex gap-2 flex-wrap justify-center">
@@ -102,29 +109,18 @@ export default function SeatMap({
                           : "Available"
                       }`}
                     >
-                      {seat.number || seat.label}
+                      <span className="text-[10px] font-bold">
+                        {seat.number || seat.label.slice(-1)}
+                      </span>
                     </button>
                   );
                 })}
             </div>
+            <span className="w-8 text-center text-sm font-bold text-muted-foreground bg-muted/30 rounded px-2 py-1">
+              {row}
+            </span>
           </div>
         ))}
-      </div>
-
-      {/* Legend */}
-      <div className="flex flex-wrap items-center justify-center gap-6 pt-6 border-t">
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-t-lg bg-background border-2 border-border" />
-          <span className="text-sm">Available</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-t-lg bg-primary border-2 border-primary" />
-          <span className="text-sm">Selected</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-t-lg bg-muted border-2 border-muted opacity-50" />
-          <span className="text-sm">Unavailable</span>
-        </div>
       </div>
     </div>
   );

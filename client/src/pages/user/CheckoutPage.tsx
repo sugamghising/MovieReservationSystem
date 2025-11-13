@@ -9,7 +9,6 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import BookingSummary from "@/components/booking/BookingSummary";
 import { useBookingStore } from "@/store";
-import { useCreateReservation } from "@/hooks/useReservations";
 import { useCreatePaymentIntent, useConfirmPayment } from "@/hooks/usePayment";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -23,9 +22,9 @@ export default function CheckoutPage() {
     selectedSeats,
     totalPrice,
     currentStep,
+    reservationId,
     nextStep,
     previousStep,
-    setReservationId,
   } = useBookingStore();
 
   const [cardNumber, setCardNumber] = useState("");
@@ -34,16 +33,15 @@ export default function CheckoutPage() {
   const [cvv, setCvv] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const createReservation = useCreateReservation();
   const createPaymentIntent = useCreatePaymentIntent();
   const confirmPayment = useConfirmPayment();
 
   useEffect(() => {
-    // Redirect if no booking data
-    if (!movie || !showtime || selectedSeats.length === 0) {
+    // Redirect if no booking data or reservation
+    if (!movie || !showtime || selectedSeats.length === 0 || !reservationId) {
       navigate("/movies");
     }
-  }, [movie, showtime, selectedSeats, navigate]);
+  }, [movie, showtime, selectedSeats, reservationId, navigate]);
 
   if (!movie || !showtime) {
     return null;
@@ -59,24 +57,28 @@ export default function CheckoutPage() {
       return;
     }
 
+    if (!reservationId) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "No reservation found. Please go back and select seats.",
+      });
+      return;
+    }
+
     setIsProcessing(true);
 
     try {
-      // Step 1: Create reservation
-      const reservationResponse = await createReservation.mutateAsync({
-        showtimeId: showtime.id,
-        seatIds: selectedSeats.map((s) => parseInt(s.id)),
-      });
-
-      const reservationId = reservationResponse.reservation.id;
-      setReservationId(reservationId);
-
-      // Step 2: Create payment intent
+      // Step 1: Create payment intent
       const paymentIntentResponse = await createPaymentIntent.mutateAsync({
         reservationId,
       });
 
-      // Step 3: Confirm payment (using paymentId returned from payment intent)
+      // Step 2: Simulate card processing (in production, use Stripe Elements)
+      // Wait a bit to simulate payment processing
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      // Step 3: Confirm payment
       await confirmPayment.mutateAsync(paymentIntentResponse.paymentId);
 
       // Success!
@@ -87,7 +89,8 @@ export default function CheckoutPage() {
       });
 
       navigate("/payment-success");
-    } catch {
+    } catch (error) {
+      console.error("Payment error:", error);
       toast({
         variant: "destructive",
         title: "Payment Failed",
@@ -134,84 +137,123 @@ export default function CheckoutPage() {
   const progress = ((currentStep - 1) / (steps.length - 1)) * 100;
 
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20 py-8">
       <div className="container max-w-7xl">
-        {/* Header */}
-        <div className="mb-8">
+        {/* Enhanced Header */}
+        <div className="mb-8 space-y-4">
           <Button
             variant="ghost"
             onClick={() => {
               previousStep();
               navigate("/booking");
             }}
-            className="mb-4"
+            className="group hover:bg-primary/10 transition-all"
           >
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
             Back to Seat Selection
           </Button>
-          <h1 className="text-4xl font-bold mb-2">Payment</h1>
-          <p className="text-lg text-muted-foreground">
-            Complete your booking with secure payment
-          </p>
+
+          {/* Payment Header Banner */}
+          <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-rose-600 to-purple-600 p-6 text-white shadow-2xl">
+            <div className="relative z-10">
+              <div className="flex items-center gap-2 mb-2">
+                <Lock className="h-5 w-5" />
+                <span className="text-sm font-medium uppercase tracking-wider opacity-90">
+                  Secure Checkout
+                </span>
+              </div>
+              <h1 className="text-3xl md:text-4xl font-bold mb-2">
+                Complete Your Booking
+              </h1>
+              <p className="text-sm md:text-base opacity-90">
+                Your reservation is secured • Final step to confirm
+              </p>
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent" />
+          </div>
         </div>
 
-        {/* Progress Bar */}
-        <Card className="mb-8">
+        {/* Enhanced Progress Bar */}
+        <Card className="mb-8 border-0 shadow-lg bg-card/50 backdrop-blur">
           <CardContent className="pt-6">
-            <div className="mb-4">
-              <div className="flex justify-between mb-2">
-                {steps.map((step) => (
+            <div className="space-y-4">
+              <div className="flex justify-between">
+                {steps.map((step, index) => (
                   <div
                     key={step.number}
-                    className={`flex flex-col items-center ${
-                      step.number <= currentStep
-                        ? "text-primary"
-                        : "text-muted-foreground"
-                    }`}
+                    className="flex flex-col items-center relative"
                   >
                     <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center mb-2 ${
-                        step.number <= currentStep
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted"
+                      className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 font-semibold transition-all duration-300 ${
+                        step.number < currentStep
+                          ? "bg-green-500 text-white shadow-lg shadow-green-500/50"
+                          : step.number === currentStep
+                          ? "bg-primary text-primary-foreground shadow-lg shadow-primary/50 scale-110"
+                          : "bg-muted text-muted-foreground"
                       }`}
                     >
-                      {step.number}
+                      {step.number < currentStep ? "✓" : step.number}
                     </div>
-                    <span className="text-xs text-center hidden sm:block">
+                    <span
+                      className={`text-xs text-center hidden sm:block font-medium ${
+                        step.number <= currentStep
+                          ? "text-primary"
+                          : "text-muted-foreground"
+                      }`}
+                    >
                       {step.name}
                     </span>
+                    {index < steps.length - 1 && (
+                      <div
+                        className={`absolute top-5 left-1/2 w-full h-0.5 -z-10 transition-all duration-300 ${
+                          step.number < currentStep
+                            ? "bg-green-500"
+                            : "bg-muted"
+                        }`}
+                        style={{ transform: "translateY(-50%)" }}
+                      />
+                    )}
                   </div>
                 ))}
               </div>
-              <Progress value={progress} className="h-2" />
+              <Progress value={progress} className="h-2.5 shadow-inner" />
             </div>
           </CardContent>
         </Card>
 
-        {/* Main Content */}
+        {/* Main Content - Enhanced */}
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Payment Form */}
+          {/* Payment Form - Enhanced */}
           <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CreditCard className="h-5 w-5" />
+            <Card className="border-0 shadow-xl">
+              <CardHeader className="bg-gradient-to-r from-muted/50 to-muted/30">
+                <CardTitle className="flex items-center gap-2 text-xl">
+                  <CreditCard className="h-6 w-6 text-primary" />
                   Payment Information
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Security Notice */}
-                <div className="flex items-center gap-2 p-4 bg-muted rounded-lg">
-                  <Lock className="h-5 w-5 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">
-                    Your payment information is secure and encrypted
-                  </p>
+              <CardContent className="space-y-6 pt-6">
+                {/* Enhanced Security Notice */}
+                <div className="flex items-center gap-3 p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
+                  <Lock className="h-6 w-6 text-green-600 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-semibold text-green-700 dark:text-green-400">
+                      Secure Payment
+                    </p>
+                    <p className="text-xs text-green-600 dark:text-green-500">
+                      Your payment information is encrypted and protected
+                    </p>
+                  </div>
                 </div>
 
                 {/* Card Number */}
                 <div className="space-y-2">
-                  <Label htmlFor="cardNumber">Card Number</Label>
+                  <Label
+                    htmlFor="cardNumber"
+                    className="text-base font-semibold"
+                  >
+                    Card Number
+                  </Label>
                   <Input
                     id="cardNumber"
                     placeholder="1234 5678 9012 3456"
@@ -220,24 +262,33 @@ export default function CheckoutPage() {
                       setCardNumber(formatCardNumber(e.target.value))
                     }
                     maxLength={19}
+                    className="h-12 text-base"
                   />
                 </div>
 
                 {/* Cardholder Name */}
                 <div className="space-y-2">
-                  <Label htmlFor="cardName">Cardholder Name</Label>
+                  <Label htmlFor="cardName" className="text-base font-semibold">
+                    Cardholder Name
+                  </Label>
                   <Input
                     id="cardName"
                     placeholder="John Doe"
                     value={cardName}
                     onChange={(e) => setCardName(e.target.value)}
+                    className="h-12 text-base"
                   />
                 </div>
 
                 {/* Expiry and CVV */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="expiryDate">Expiry Date</Label>
+                    <Label
+                      htmlFor="expiryDate"
+                      className="text-base font-semibold"
+                    >
+                      Expiry Date
+                    </Label>
                     <Input
                       id="expiryDate"
                       placeholder="MM/YY"
@@ -246,10 +297,13 @@ export default function CheckoutPage() {
                         setExpiryDate(formatExpiryDate(e.target.value))
                       }
                       maxLength={5}
+                      className="h-12 text-base"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="cvv">CVV</Label>
+                    <Label htmlFor="cvv" className="text-base font-semibold">
+                      CVV
+                    </Label>
                     <Input
                       id="cvv"
                       placeholder="123"
@@ -259,34 +313,38 @@ export default function CheckoutPage() {
                       }
                       maxLength={4}
                       type="password"
+                      className="h-12 text-base"
                     />
                   </div>
                 </div>
 
                 <Separator />
 
-                {/* Action Buttons */}
-                <div className="space-y-3">
+                {/* Enhanced Action Buttons */}
+                <div className="space-y-3 pt-4">
                   <Button
                     size="lg"
-                    className="w-full"
+                    className="w-full h-14 text-base font-semibold shadow-xl hover:shadow-2xl hover:scale-[1.02] transition-all duration-200 bg-gradient-to-r from-rose-600 to-purple-600 hover:from-rose-700 hover:to-purple-700"
                     onClick={handlePayment}
                     disabled={isProcessing}
                   >
                     {isProcessing ? (
                       <>
-                        <Skeleton className="h-4 w-4 mr-2" />
-                        Processing...
+                        <Skeleton className="h-5 w-5 mr-2 rounded-full" />
+                        Processing Payment...
                       </>
                     ) : (
-                      <>Pay ${totalPrice.toFixed(2)}</>
+                      <>
+                        <Lock className="h-5 w-5 mr-2" />
+                        Pay ${totalPrice.toFixed(2)}
+                      </>
                     )}
                   </Button>
 
                   <Button
                     size="lg"
                     variant="outline"
-                    className="w-full"
+                    className="w-full h-12 hover:bg-muted transition-all"
                     onClick={() => {
                       previousStep();
                       navigate("/booking");
@@ -294,7 +352,7 @@ export default function CheckoutPage() {
                     disabled={isProcessing}
                   >
                     <ArrowLeft className="h-4 w-4 mr-2" />
-                    Back
+                    Back to Seats
                   </Button>
                 </div>
               </CardContent>
@@ -303,11 +361,13 @@ export default function CheckoutPage() {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <BookingSummary
-              showtime={showtime}
-              selectedSeats={selectedSeats}
-              totalPrice={totalPrice}
-            />
+            <div className="lg:sticky lg:top-4">
+              <BookingSummary
+                showtime={showtime}
+                selectedSeats={selectedSeats}
+                totalPrice={totalPrice}
+              />
+            </div>
           </div>
         </div>
       </div>
