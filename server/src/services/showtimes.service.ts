@@ -51,18 +51,93 @@ export const listShowtimes = async (filters?: { movieId?: string; date?: string;
             where,
             skip,
             take,
-            include: { movie: true, theater: true },
+            include: {
+                movie: true,
+                theater: {
+                    include: {
+                        seats: true
+                    }
+                },
+                reservationSeats: {
+                    where: {
+                        reservation: {
+                            status: { in: ['BOOKED', 'HELD'] }
+                        }
+                    }
+                }
+            },
             orderBy: { startTime: 'asc' }
         })
     ]);
 
-    return createPaginatedResponse(showtimes, totalItems, currentPage, itemsPerPage);
+    // Calculate available seats for each showtime
+    const showtimesWithSeats = showtimes.map((showtime: any) => {
+        const reservedSeatIds = new Set(
+            showtime.reservationSeats.map((rs: any) => rs.seatId)
+        );
+
+        const totalSeats = showtime.theater.seats.length;
+        const availableSeats = totalSeats - reservedSeatIds.size;
+
+        // Remove the full reservationSeats data and theater.seats from response
+        const { reservationSeats, theater, ...showtimeData } = showtime;
+        const { seats, ...theaterData } = theater;
+
+        return {
+            ...showtimeData,
+            theater: theaterData,
+            availableSeats,
+            totalSeats
+        };
+    });
+
+    return createPaginatedResponse(showtimesWithSeats, totalItems, currentPage, itemsPerPage);
 }
 
 
 export const getShowtimeByMovies = async (movieId: string) => {
-    const movies = await prisma.showtime.findMany({ where: { movieId: movieId } });
-    return movies;
+    const showtimes = await prisma.showtime.findMany({
+        where: { movieId: movieId },
+        include: {
+            movie: true,
+            theater: {
+                include: {
+                    seats: true
+                }
+            },
+            reservationSeats: {
+                where: {
+                    reservation: {
+                        status: { in: ['BOOKED', 'HELD'] }
+                    }
+                }
+            }
+        },
+        orderBy: { startTime: 'asc' }
+    });
+
+    // Calculate available seats for each showtime
+    const showtimesWithSeats = showtimes.map((showtime: any) => {
+        const reservedSeatIds = new Set(
+            showtime.reservationSeats.map((rs: any) => rs.seatId)
+        );
+
+        const totalSeats = showtime.theater.seats.length;
+        const availableSeats = totalSeats - reservedSeatIds.size;
+
+        // Remove the full reservationSeats data and theater.seats from response
+        const { reservationSeats, theater, ...showtimeData } = showtime;
+        const { seats, ...theaterData } = theater;
+
+        return {
+            ...showtimeData,
+            theater: theaterData,
+            availableSeats,
+            totalSeats
+        };
+    });
+
+    return { showtimes: showtimesWithSeats };
 }
 
 export const updateShowtime = async (id: string, data:

@@ -55,9 +55,9 @@ export const listShowtimes = async (req: Request, res: Response) => {
 export const getShowtimeByMovies = async (req: Request, res: Response) => {
     try {
         const { movieId } = req.params as { movieId: string };
-        const showtime = showtimeService.getShowtimeByMovies(movieId);
+        const result = await showtimeService.getShowtimeByMovies(movieId);
 
-        return res.status(200).json(showtime)
+        return res.status(200).json(result);
     } catch (error) {
         console.error("Error fetching showtimes by movies:", error);
         res.status(500).json({ message: "Internal Server Error", error: (error as Error).message });

@@ -44,9 +44,11 @@ export interface Theater {
 export interface Seat {
     id: string;
     theaterId: string;
-    seatNumber: string;
-    rowLabel: string;
-    seatType: string;
+    label: string;
+    row?: string;
+    number?: number;
+    type?: string;
+    extraPrice?: number;
     createdAt: string;
 }
 

@@ -26,9 +26,7 @@ export interface Theater extends ApiTheater {
 
 // Extended Seat type with display properties
 export interface Seat extends ApiSeat {
-    row: string; // Computed from rowLabel
-    number: number; // Computed from seatNumber
-    status: 'AVAILABLE' | 'OCCUPIED' | 'BLOCKED' | 'HELD';
+    status?: 'AVAILABLE' | 'OCCUPIED' | 'BLOCKED' | 'HELD';
     isSelected?: boolean;
     price?: number;
 }

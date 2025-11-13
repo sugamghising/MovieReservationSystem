@@ -12,9 +12,11 @@ export interface CreateTheaterRequest {
 }
 
 export interface AddSeatRequest {
-    row: string;
-    number: number;
+    label: string;
+    row?: string;
+    number?: number;
     type?: string;
+    extraPrice?: number;
 }
 
 export const theatersApi = {
@@ -30,13 +32,13 @@ export const theatersApi = {
         return response.data;
     },
 
-    addSeat: async (theaterId: string, data: AddSeatRequest): Promise<{ seat: Seat }> => {
+    addSeat: async (theaterId: string, data: AddSeatRequest): Promise<Seat> => {
         const response = await apiClient.post(`/theatres/${theaterId}/seat`, data);
         return response.data;
     },
 
-    getTheaterSeats: async (theaterId: string): Promise<{ seats: Seat[] }> => {
-        const response = await apiClient.get(`/theatres/${theaterId}/seat`);
+    getTheaterSeats: async (theaterId: string, params?: { page?: number; limit?: number }): Promise<PaginatedResponse<Seat>> => {
+        const response = await apiClient.get(`/theatres/${theaterId}/seat`, { params });
         return response.data;
     },
 };

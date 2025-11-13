@@ -180,7 +180,7 @@ export default function MovieDetailPage() {
                       onSelect={(selectedShowtime) => {
                         setMovie(movie);
                         setShowtime(selectedShowtime);
-                        navigate("/booking");
+                        navigate(`/booking/${selectedShowtime.id}`);
                       }}
                     />
                   ))}

@@ -12,10 +12,10 @@ export const useTheaters = (params: GetTheatersParams) => {
 };
 
 // Get theater seats (Admin)
-export const useTheaterSeats = (theaterId: string) => {
+export const useTheaterSeats = (theaterId: string, params?: { page?: number; limit?: number }) => {
     return useQuery({
-        queryKey: [QUERY_KEYS.AVAILABLE_SEATS, theaterId],
-        queryFn: () => theatersApi.getTheaterSeats(theaterId),
+        queryKey: [QUERY_KEYS.SEATS, theaterId, params],
+        queryFn: () => theatersApi.getTheaterSeats(theaterId, params),
         enabled: !!theaterId,
     });
 };
@@ -44,7 +44,7 @@ export const useAddSeat = () => {
         mutationFn: ({ theaterId, data }: { theaterId: string; data: AddSeatRequest }) =>
             theatersApi.addSeat(theaterId, data),
         onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.AVAILABLE_SEATS, variables.theaterId] });
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SEATS, variables.theaterId] });
             toast.success('Seat added successfully');
         },
         onError: () => {

@@ -55,7 +55,7 @@ export default function Header() {
                 My Bookings
               </Link>
             )}
-            {user?.role === "ADMIN" && (
+            {isAuthenticated && user?.role === "ADMIN" && (
               <Link
                 to={ROUTES.ADMIN_DASHBOARD}
                 className="text-sm font-medium transition-colors hover:text-primary"
