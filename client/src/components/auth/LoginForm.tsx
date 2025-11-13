@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -25,11 +25,21 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
+interface LocationState {
+  from?: {
+    pathname: string;
+  };
+}
+
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const setAuth = useAuthStore((state) => state.setAuth);
+
+  // Get the location they were trying to go to before being redirected to login
+  const from = (location.state as LocationState)?.from?.pathname || null;
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -46,8 +56,13 @@ export default function LoginForm() {
       setAuth(response.user, response.token);
       toast.success("Login successful!");
 
-      // Redirect based on role
-      if (response.user.role === "ADMIN") {
+      // Redirect based on priority:
+      // 1. If they were trying to access a specific page, go there
+      // 2. If admin, go to dashboard
+      // 3. Otherwise, go to movies
+      if (from && !from.includes("/login") && !from.includes("/register")) {
+        navigate(from, { replace: true });
+      } else if (response.user.role === "ADMIN") {
         navigate("/admin/dashboard");
       } else {
         navigate("/movies");

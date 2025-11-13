@@ -199,7 +199,7 @@ export const availableSeats = async (id: string) => {
         totalSeats: showtime.theater.seats.length,
         reservedSeats: reservedSeatIds.size,
         availableSeatsCount: availableSeats.length,
-        availableSeats: availableSeats.map((seat: any) => ({
+        seats: availableSeats.map((seat: any) => ({
             id: seat.id,
             label: seat.label,
             row: seat.row,

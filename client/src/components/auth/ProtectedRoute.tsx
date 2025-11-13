@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
 
 interface ProtectedRouteProps {
@@ -13,9 +13,11 @@ export default function ProtectedRoute({
   adminOnly = false,
 }: ProtectedRouteProps) {
   const { isAuthenticated, user } = useAuthStore();
+  const location = useLocation();
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    // Save the current location they were trying to go to
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   if ((requireAdmin || adminOnly) && user?.role !== "ADMIN") {

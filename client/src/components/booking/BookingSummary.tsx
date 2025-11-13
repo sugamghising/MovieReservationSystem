@@ -17,7 +17,7 @@ export default function BookingSummary({
   totalPrice,
 }: BookingSummaryProps) {
   return (
-    <Card className="sticky top-4">
+    <Card>
       <CardHeader>
         <CardTitle>Booking Summary</CardTitle>
       </CardHeader>

@@ -36,16 +36,11 @@ export default function BookingPage() {
   const seats: Seat[] = useMemo(
     () =>
       (seatsData?.seats || []).map((seat: ApiSeat) => {
-        // Extract row letter and seat number from seatNumber (e.g., "A1" -> row: "A", number: 1)
-        const match = seat.seatNumber.match(/^([A-Z]+)(\d+)$/);
-        const row = match ? match[1] : seat.rowLabel;
-        const number = match ? parseInt(match[2], 10) : 0;
-
         return {
           ...seat,
-          row,
-          number,
-          status: "AVAILABLE" as const, // Default status, should come from API
+          row: seat.row || "",
+          number: seat.number || 0,
+          status: "AVAILABLE" as const,
         };
       }),
     [seatsData]
@@ -78,9 +73,9 @@ export default function BookingPage() {
     } else {
       addSeat({
         id: seat.id,
-        row: seat.row,
-        number: seat.number,
-        seatNumber: seat.seatNumber,
+        row: seat.row || "",
+        number: seat.number || 0,
+        seatNumber: seat.label, // Use label as seatNumber
         price: showtime.price,
       });
     }
@@ -203,39 +198,41 @@ export default function BookingPage() {
 
           {/* Summary */}
           <div className="lg:col-span-1">
-            <BookingSummary
-              showtime={showtime}
-              selectedSeats={selectedSeats}
-              totalPrice={totalPrice}
-            />
+            <div className="lg:sticky lg:top-4 space-y-4">
+              <BookingSummary
+                showtime={showtime}
+                selectedSeats={selectedSeats}
+                totalPrice={totalPrice}
+              />
 
-            {/* Action Buttons */}
-            <div className="mt-4 space-y-3">
-              <Button
-                size="lg"
-                className="w-full"
-                onClick={handleContinue}
-                disabled={selectedSeats.length === 0}
-              >
-                Continue to Payment
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="w-full"
-                onClick={previousStep}
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
-              </Button>
+              {/* Action Buttons */}
+              <div className="space-y-3">
+                <Button
+                  size="lg"
+                  className="w-full"
+                  onClick={handleContinue}
+                  disabled={selectedSeats.length === 0}
+                >
+                  Continue to Payment
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full"
+                  onClick={previousStep}
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back
+                </Button>
+              </div>
+
+              {selectedSeats.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center">
+                  Please select at least one seat to continue
+                </p>
+              )}
             </div>
-
-            {selectedSeats.length === 0 && (
-              <p className="text-sm text-muted-foreground text-center mt-4">
-                Please select at least one seat to continue
-              </p>
-            )}
           </div>
         </div>
       </div>

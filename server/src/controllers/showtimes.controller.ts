@@ -67,10 +67,10 @@ export const getShowtimeByMovies = async (req: Request, res: Response) => {
 //Get Available Seats for Showtime
 export const getAvailableSeats = async (req: Request, res: Response) => {
     try {
-        const { id } = req.params as { id: string };
-        const availableSeats = await showtimeService.availableSeats(id);
+        const { showtimeId } = req.params as { showtimeId: string };
+        const availableSeats = await showtimeService.availableSeats(showtimeId);
 
-        res.status(201).json(availableSeats);
+        res.status(200).json(availableSeats);
     } catch (error) {
         console.error("Error fetching available Seats:", error);
         res.status(500).json({ message: "Internal Server Error", error: (error as Error).message });
