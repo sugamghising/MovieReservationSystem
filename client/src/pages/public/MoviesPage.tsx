@@ -49,7 +49,7 @@ export default function MoviesPage() {
 
   return (
     <div className="min-h-screen py-8">
-      <div className="container">
+      <div className="container ml-8 md:ml-12 lg:ml-16">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Browse Movies</h1>

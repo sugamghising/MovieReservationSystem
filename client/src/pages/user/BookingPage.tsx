@@ -25,6 +25,7 @@ export default function BookingPage() {
     selectedSeats,
     currentStep,
     totalPrice,
+    reservationId,
     addSeat,
     removeSeat,
     calculateTotalPrice,
@@ -96,6 +97,13 @@ export default function BookingPage() {
       return;
     }
 
+    // If we already have a reservation ID, just navigate to checkout
+    if (reservationId) {
+      nextStep();
+      navigate("/checkout");
+      return;
+    }
+
     setIsCreatingReservation(true);
 
     try {
@@ -113,7 +121,31 @@ export default function BookingPage() {
       nextStep();
       navigate("/checkout");
     } catch (error) {
-      toast.error("Failed to create reservation. Please try again.");
+      // Check if the error is about seats already reserved
+      interface ErrorResponse {
+        response?: {
+          data?: {
+            message?: string;
+          };
+        };
+        message?: string;
+      }
+
+      const apiError = error as ErrorResponse;
+      const errorMessage =
+        apiError?.response?.data?.message ||
+        apiError?.message ||
+        "Failed to create reservation";
+
+      if (errorMessage.includes("already reserved")) {
+        toast.error(
+          "One or more selected seats are no longer available. Please select different seats."
+        );
+        // Refresh available seats
+        window.location.reload();
+      } else {
+        toast.error(errorMessage);
+      }
       console.error("Reservation creation error:", error);
     } finally {
       setIsCreatingReservation(false);
@@ -132,7 +164,7 @@ export default function BookingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20 py-8">
-      <div className="container">
+      <div className="container ml-8 md:ml-12 lg:ml-16">
         {/* Header with Enhanced Visual */}
         <div className="mb-8 space-y-4">
           <Button

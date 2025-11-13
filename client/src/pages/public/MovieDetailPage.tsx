@@ -33,7 +33,7 @@ export default function MovieDetailPage() {
   if (movieLoading) {
     return (
       <div className="min-h-screen py-8">
-        <div className="container">
+        <div className="container ml-8 md:ml-12 lg:ml-16">
           <Skeleton className="h-8 w-32 mb-8" />
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-1">
@@ -54,7 +54,7 @@ export default function MovieDetailPage() {
   if (!movie) {
     return (
       <div className="min-h-screen py-8">
-        <div className="container">
+        <div className="container ml-8 md:ml-12 lg:ml-16">
           <Card>
             <CardContent className="p-12 text-center">
               <Film className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
@@ -74,7 +74,7 @@ export default function MovieDetailPage() {
 
   return (
     <div className="min-h-screen py-8">
-      <div className="container">
+      <div className="container ml-8 md:ml-12 lg:ml-16">
         {/* Back Button */}
         <Button variant="ghost" className="mb-8" asChild>
           <Link to="/movies">

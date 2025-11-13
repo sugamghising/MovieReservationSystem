@@ -28,11 +28,42 @@ export const createReservation = async (userId: string, showtimeId: string, seat
             throw new Error('Some seats do not belong in the theater');
         }
 
-        // Check for existing reservation seats using Prisma query instead of raw SQL
+        // Check if user already has a HELD reservation for this showtime with the same seats
+        const existingUserReservation = await tx.reservation.findFirst({
+            where: {
+                userId,
+                showtimeId,
+                status: 'HELD',
+            },
+            include: {
+                seats: {
+                    select: {
+                        seatId: true
+                    }
+                }
+            }
+        });
+
+        // If user has a HELD reservation with exactly the same seats, return it
+        if (existingUserReservation) {
+            const existingSeatIds = existingUserReservation.seats.map(s => s.seatId).sort();
+            const requestedSeatIds = [...seatIds].sort();
+
+            if (JSON.stringify(existingSeatIds) === JSON.stringify(requestedSeatIds)) {
+                // Return existing reservation instead of creating a duplicate
+                return existingUserReservation;
+            }
+        }
+
+        // Check for existing reservation seats by OTHER users
         const existingReservationSeats = await tx.reservationSeat.findMany({
             where: {
                 showtimeId: showtimeId,
-                seatId: { in: seatIds }
+                seatId: { in: seatIds },
+                reservation: {
+                    userId: { not: userId }, // Exclude current user's reservations
+                    status: { in: ['HELD', 'BOOKED'] } // Only active reservations
+                }
             }
         });
 

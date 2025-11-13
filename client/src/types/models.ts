@@ -43,7 +43,6 @@ export interface Showtime extends ApiShowtime {
 
 // Extended Reservation type
 export interface Reservation extends ApiReservation {
-    seats?: Seat[];
     canCancel?: boolean;
     formattedStatus?: string;
 }

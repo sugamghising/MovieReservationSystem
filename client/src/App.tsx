@@ -18,6 +18,7 @@ import RegisterPage from "./pages/public/RegisterPage";
 import BookingPage from "./pages/user/BookingPage";
 import CheckoutPage from "./pages/user/CheckoutPage";
 import MyReservationsPage from "./pages/user/MyReservationsPage";
+import ReservationDetailPage from "./pages/user/ReservationDetailPage";
 import PaymentSuccessPage from "./pages/user/PaymentSuccessPage";
 import ProfilePage from "./pages/user/ProfilePage";
 
@@ -70,6 +71,10 @@ function App() {
             <Route
               path={ROUTES.MY_RESERVATIONS}
               element={<MyReservationsPage />}
+            />
+            <Route
+              path={ROUTES.RESERVATION_DETAIL}
+              element={<ReservationDetailPage />}
             />
             <Route
               path={ROUTES.PAYMENT_SUCCESS}

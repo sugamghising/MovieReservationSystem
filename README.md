@@ -1,55 +1,212 @@
-# Movie Reservation System - Backend API
+# 🎬 Movie Reservation System
 
-A robust backend API for a movie reservation system built with Node.js, Express, TypeScript, Prisma, and PostgreSQL.
+A full-stack movie ticket reservation platform with real-time seat booking, payment processing, and comprehensive admin analytics. Built with modern web technologies for a seamless cinema booking experience.
 
-## Features
+## 📋 Table of Contents
 
-- ✅ User Authentication (Register/Login with JWT)
-- ✅ Role-based Access Control (Admin/User)
-- ✅ Movie Management (CRUD operations)
-- ✅ Theater Management (Create theaters, add seats)
-- ✅ Showtime Management (Create and list showtimes)
-- ✅ Seat Reservation System (Book seats, view reservations)
-- ✅ Admin Analytics Dashboard (Revenue, Occupancy, Popular Movies, Cancellations)
-- ✅ **API Rate Limiting** (Protection against abuse)
-- ✅ **Pagination** (Efficient data retrieval for all list endpoints)
-- 🚧 Payment Processing (Coming soon)
+- [Overview](#overview)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [Getting Started](#getting-started)
+- [API Documentation](#api-documentation)
+- [Database Schema](#database-schema)
+- [Security Features](#security-features)
+- [Screenshots](#screenshots)
+- [Development](#development)
+- [Contributing](#contributing)
 
-## Tech Stack
+---
 
-- **Runtime**: Node.js
-- **Framework**: Express.js
-- **Language**: TypeScript
-- **Database**: PostgreSQL
-- **ORM**: Prisma
+## 🎯 Overview
+
+The Movie Reservation System is a comprehensive solution for cinema operations, offering:
+
+- **User Portal**: Browse movies, book seats, manage reservations, and process payments
+- **Admin Dashboard**: Complete theater management, analytics, and business insights
+- **Real-time Booking**: Concurrency-safe seat reservation with row-level locking
+- **Payment Integration**: Stripe payment processing with webhook support
+- **Analytics**: Revenue tracking, occupancy rates, popular movies, and cancellation metrics
+
+---
+
+## ✨ Features
+
+### 🎭 User Features
+
+- ✅ **User Authentication** - Register, login, and secure JWT-based sessions
+- ✅ **Movie Browsing** - Search and filter movies by genre
+- ✅ **Showtime Selection** - View available showtimes with theater information
+- ✅ **Interactive Seat Selection** - Visual seat map with real-time availability
+- ✅ **Booking Management** - View, manage, and cancel reservations
+- ✅ **Secure Payments** - Stripe integration for card payments
+- ✅ **Payment Confirmation** - Instant booking confirmation and receipt
+- ✅ **Responsive Design** - Mobile-first UI with Tailwind CSS v4
+
+### 👨‍💼 Admin Features
+
+- ✅ **Movie Management** - Full CRUD operations for movie catalog
+- ✅ **Theater Management** - Create theaters and configure seat layouts
+- ✅ **Showtime Scheduling** - Schedule movies with automatic conflict detection
+- ✅ **User Management** - View and manage user accounts
+- ✅ **Analytics Dashboard** - Comprehensive business metrics:
+  - 💰 Revenue reports with date range filtering
+  - 📈 Occupancy rates by movie and theater
+  - 🎬 Popular movies ranking by bookings and revenue
+  - ❌ Cancellation analytics and lost revenue tracking
+  - 📊 Daily trends and performance indicators
+
+### 🔒 Security & Performance
+
+- ✅ **Role-based Access Control** - Admin and User roles with protected routes
+- ✅ **API Rate Limiting** - Tiered rate limits for different endpoint categories
+- ✅ **Input Validation** - Zod schemas for all API requests
+- ✅ **Transaction Safety** - Row-level locking to prevent double-booking
+- ✅ **Password Security** - bcrypt hashing with 10 salt rounds
+- ✅ **SQL Injection Protection** - Prisma ORM with parameterized queries
+- ✅ **Pagination** - Efficient data loading with configurable limits
+
+---
+
+## 🛠️ Tech Stack
+
+### Backend
+
+- **Runtime**: Node.js v18+
+- **Framework**: Express.js v5
+- **Language**: TypeScript v5.9
+- **Database**: PostgreSQL v14+
+- **ORM**: Prisma v6.19
 - **Authentication**: JWT (JSON Web Tokens)
 - **Password Hashing**: bcrypt
 - **Validation**: Zod
 - **Rate Limiting**: express-rate-limit
+- **Payment Processing**: Stripe
+- **Logging**: Morgan
 
-## Prerequisites
+### Frontend
 
-- Node.js (v18 or higher)
-- PostgreSQL (v14 or higher)
-- npm or yarn
+- **Framework**: React v19.2
+- **Language**: TypeScript v5.9
+- **Build Tool**: Vite v7.2
+- **Styling**: Tailwind CSS v4 + shadcn/ui
+- **State Management**: Zustand + TanStack React Query v5
+- **Routing**: React Router v7
+- **Form Handling**: React Hook Form + Zod validation
+- **HTTP Client**: Axios
+- **Payment UI**: Stripe React Elements
+- **Charts**: Recharts
+- **Icons**: Lucide React
+- **Date Utilities**: date-fns
 
-## Getting Started
+---
 
-### 1. Clone the repository
+## 📁 Project Structure
+
+```
+MovieReservationSystem/
+├── client/                      # Frontend React application
+│   ├── src/
+│   │   ├── api/                # API client and types
+│   │   ├── components/         # Reusable UI components
+│   │   │   ├── ui/            # shadcn/ui components
+│   │   │   ├── layout/        # Layout components
+│   │   │   └── features/      # Feature-specific components
+│   │   ├── hooks/             # Custom React hooks
+│   │   ├── lib/               # Utility libraries
+│   │   ├── pages/             # Page components
+│   │   │   ├── admin/         # Admin dashboard pages
+│   │   │   │   ├── DashboardPage.tsx
+│   │   │   │   ├── MoviesManagementPage.tsx
+│   │   │   │   ├── TheatersManagementPage.tsx
+│   │   │   │   ├── ShowtimesManagementPage.tsx
+│   │   │   │   ├── UsersManagementPage.tsx
+│   │   │   │   └── AnalyticsPage.tsx
+│   │   │   ├── public/        # Public pages
+│   │   │   │   ├── HomePage.tsx
+│   │   │   │   ├── MoviesPage.tsx
+│   │   │   │   ├── MovieDetailPage.tsx
+│   │   │   │   ├── ShowtimesPage.tsx
+│   │   │   │   ├── LoginPage.tsx
+│   │   │   │   └── RegisterPage.tsx
+│   │   │   └── user/          # User portal pages
+│   │   │       ├── BookingPage.tsx
+│   │   │       ├── CheckoutPage.tsx
+│   │   │       ├── PaymentSuccessPage.tsx
+│   │   │       ├── MyReservationsPage.tsx
+│   │   │       ├── ReservationDetailPage.tsx
+│   │   │       └── ProfilePage.tsx
+│   │   ├── store/             # Zustand state management
+│   │   ├── types/             # TypeScript type definitions
+│   │   └── App.tsx            # Root component
+│   ├── public/                # Static assets
+│   └── package.json
+│
+├── server/                     # Backend API application
+│   ├── prisma/
+│   │   ├── schema.prisma      # Database schema
+│   │   └── migrations/        # Database migrations
+│   ├── src/
+│   │   ├── config/            # Configuration files
+│   │   │   └── db.ts         # Prisma client setup
+│   │   ├── controllers/       # Route handlers
+│   │   │   ├── auth.controller.ts
+│   │   │   ├── movie.controller.ts
+│   │   │   ├── theatres.controller.ts
+│   │   │   ├── showtimes.controller.ts
+│   │   │   ├── reservations.controller.ts
+│   │   │   ├── payment.controller.ts
+│   │   │   └── analytic.controller.ts
+│   │   ├── middleware/        # Express middleware
+│   │   │   ├── auth.middleware.ts
+│   │   │   ├── role.middleware.ts
+│   │   │   └── rate-limit.middleware.ts
+│   │   ├── routes/            # API route definitions
+│   │   ├── schemas/           # Zod validation schemas
+│   │   ├── services/          # Business logic layer
+│   │   ├── types/             # TypeScript types
+│   │   ├── utils/             # Helper functions
+│   │   │   ├── hash.ts       # Password hashing
+│   │   │   └── jwt.ts        # JWT utilities
+│   │   └── index.ts          # Application entry point
+│   └── package.json
+│
+└── README.md                  # This file
+```
+
+---
+
+## 📋 Prerequisites
+
+- **Node.js** v18 or higher
+- **PostgreSQL** v14 or higher
+- **npm** or **yarn**
+- **Stripe Account** (for payment processing)
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/sugamghising/MovieReservationSystem.git
+cd MovieReservationSystem
+```
+
+### 2. Backend Setup
+
+#### Install Dependencies
 
 ```bash
 cd server
-```
-
-### 2. Install dependencies
-
-```bash
 npm install
 ```
 
-### 3. Environment Setup
+#### Environment Configuration
 
-Create a `.env` file in the server directory:
+Create a `.env` file in the `server` directory:
 
 ```bash
 cp .env.example .env
@@ -58,14 +215,23 @@ cp .env.example .env
 Update the `.env` file with your configuration:
 
 ```env
+# Server Configuration
 PORT=5000
+
+# Database Configuration
 DATABASE_URL="postgresql://username:password@localhost:5432/movie_reservation_db?schema=public"
+
+# JWT Configuration
 JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+
+# Stripe Configuration
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
 ```
 
-### 4. Database Setup
+#### Database Setup
 
-Run Prisma migrations:
+Run Prisma migrations to set up the database:
 
 ```bash
 npx prisma migrate dev
@@ -77,7 +243,7 @@ Generate Prisma Client:
 npx prisma generate
 ```
 
-### 5. Run the Application
+#### Run the Backend
 
 **Development mode:**
 
@@ -94,79 +260,151 @@ npm start
 
 The API will be available at `http://localhost:5000`
 
-## API Endpoints
+---
 
-### Health Check
+### 3. Frontend Setup
 
-- `GET /` - API health check
+#### Install Dependencies
+
+```bash
+cd client
+npm install
+```
+
+#### Environment Configuration
+
+Create a `.env` file in the `client` directory:
+
+```env
+# API Configuration
+VITE_API_URL=http://localhost:5000/api
+
+# Stripe Configuration
+VITE_STRIPE_PUBLIC_KEY=pk_test_your_stripe_public_key
+```
+
+#### Run the Frontend
+
+```bash
+npm run dev
+```
+
+The frontend will be available at `http://localhost:5173`
+
+---
+
+## 📚 API Documentation
+
+### Base URL
+
+```
+http://localhost:5000/api
+```
 
 ### Authentication
 
-- `POST /api/auth/register` - Register a new user
-- `POST /api/auth/login` - Login and get JWT token
+All protected endpoints require a JWT token in the Authorization header:
 
-### Movies
+```
+Authorization: Bearer <your-jwt-token>
+```
 
-- `GET /api/movies` - Get all movies (public, paginated)
-- `GET /api/movies/:movieId` - Get single movie (public)
-- `POST /api/movies` - Create movie (Admin only)
-- `PUT /api/movies/:id` - Update movie (Admin only)
-- `DELETE /api/movies/:movieId` - Delete movie (Admin only)
+### Endpoints Overview
 
-**Query Parameters for GET /api/movies:**
+#### 🔐 Authentication
+
+- `POST /auth/register` - Register a new user
+- `POST /auth/login` - Login and get JWT token
+
+#### 🎬 Movies
+
+- `GET /movies` - Get all movies (public, paginated)
+- `GET /movies/:movieId` - Get single movie (public)
+- `POST /movies` - Create movie (Admin only)
+- `PUT /movies/:id` - Update movie (Admin only)
+- `DELETE /movies/:movieId` - Delete movie (Admin only)
+
+#### 🏛️ Theaters
+
+- `GET /theatres` - Get all theaters (public, paginated)
+- `POST /theatres` - Create theater (Admin only)
+- `POST /theatres/:theatreId/seat` - Add seat to theater (Admin only)
+- `GET /theatres/:theatreId/seat` - List seats in theater (Admin only, paginated)
+
+#### 📅 Showtimes
+
+- `GET /showtimes` - Get all showtimes with filters (public, paginated)
+- `POST /showtimes` - Create showtime (Admin only)
+- `GET /showtimes/movie/:movieId` - Get showtimes for a movie
+- `GET /showtimes/:showtimeId/available-seats` - Get available seats
+- `PUT /showtimes/:showtimeId` - Update showtime (Admin only)
+- `DELETE /showtimes/:showtimeId` - Delete showtime (Admin only)
+
+#### 🎫 Reservations
+
+- `POST /reservations` - Create reservation (Authenticated users)
+- `GET /reservations` - Get user's reservations (Authenticated users, paginated)
+- `GET /reservations/:id` - Get single reservation (Authenticated users)
+- `PUT /reservations/:id` - Cancel reservation (Authenticated users)
+
+#### 💳 Payments
+
+- `POST /payments/create-intent` - Create payment intent (Authenticated users)
+- `POST /payments/:paymentId/confirm` - Confirm payment (Authenticated users)
+- `GET /payments/:paymentId` - Get payment details (Authenticated users)
+- `GET /payments/reservation/:reservationId` - Get payment by reservation (Authenticated users)
+- `POST /payments/:paymentId/refund` - Refund payment (Authenticated users)
+- `POST /payments/webhook` - Stripe webhook endpoint
+
+#### 📊 Analytics (Admin Only)
+
+- `GET /analytics/dashboard` - Get dashboard overview
+- `GET /analytics/revenue` - Get revenue report
+- `GET /analytics/occupancy` - Get occupancy report
+- `GET /analytics/popular-movies` - Get popular movies report
+- `GET /analytics/cancellations` - Get cancellation report
+
+### Query Parameters
+
+#### Pagination (All List Endpoints)
 
 - `page` - Page number (default: 1)
 - `limit` - Items per page (default: 20, max: 100)
+
+#### Movies Filters
+
 - `genre` - Filter by genre
 - `search` - Search in title and description
 
-### Theaters
+#### Showtimes Filters
 
-- `GET /api/theatres` - Get all theaters (public, paginated)
-- `POST /api/theatres` - Create theater (Admin only)
-- `POST /api/theatres/:theatreId/seat` - Add seat to theater (Admin only)
-- `GET /api/theatres/:theatreId/seat` - List seats in theater (Admin only, paginated)
-
-**Query Parameters for GET /api/theatres:**
-
-- `page` - Page number (default: 1)
-- `limit` - Items per page (default: 20, max: 100)
-
-### Showtimes
-
-- `GET /api/showtimes` - Get all showtimes with optional filters (public, paginated)
-- `POST /api/showtimes` - Create showtime (Admin only)
-
-**Query Parameters for GET /api/showtimes:**
-
-- `page` - Page number (default: 1)
-- `limit` - Items per page (default: 20, max: 100)
 - `movieId` - Filter by movie ID
 - `date` - Filter by date (YYYY-MM-DD)
 
-### Reservations
+#### Reservations Filters
 
-- `POST /api/reservations` - Create reservation (Authenticated users)
-- `GET /api/reservations` - Get user's reservations (Authenticated users, paginated)
-- `DELETE /api/reservations/:id` - Cancel reservation (Authenticated users)
-
-**Query Parameters for GET /api/reservations:**
-
-- `page` - Page number (default: 1)
-- `limit` - Items per page (default: 10, max: 100)
 - `status` - Filter by status (HELD, BOOKED, CANCELLED, EXPIRED)
 
-### Analytics (Admin Only)
+#### Analytics Filters
 
-- `GET /api/analytics/dashboard` - Get dashboard overview
-- `GET /api/analytics/revenue` - Get revenue report
-- `GET /api/analytics/occupancy` - Get occupancy report
-- `GET /api/analytics/popular-movies` - Get popular movies report
-- `GET /api/analytics/cancellations` - Get cancellation report
+- `startDate` - Start date for date range (YYYY-MM-DD)
+- `endDate` - End date for date range (YYYY-MM-DD)
+- `limit` - Number of items (for popular movies)
 
-## API Usage Examples
+### Rate Limits
 
-### Register User
+The API implements tiered rate limiting:
+
+- **Authentication endpoints**: 5 requests per 15 minutes
+- **Reservation endpoints**: 20 requests per 15 minutes
+- **Payment endpoints**: 10 requests per 15 minutes
+- **Admin endpoints**: 50 requests per 15 minutes
+- **Public read endpoints**: 200 requests per 15 minutes
+- **General API**: 100 requests per 15 minutes
+
+### Example API Calls
+
+#### Register User
 
 ```bash
 POST /api/auth/register
@@ -179,7 +417,7 @@ Content-Type: application/json
 }
 ```
 
-### Login
+#### Login
 
 ```bash
 POST /api/auth/login
@@ -191,29 +429,7 @@ Content-Type: application/json
 }
 ```
 
-### Create Movie (Admin only)
-
-```bash
-POST /api/movies
-Authorization: Bearer <your-jwt-token>
-Content-Type: application/json
-
-{
-  "title": "Inception",
-  "description": "A mind-bending thriller",
-  "posterUrl": "https://example.com/poster.jpg",
-  "genre": "Sci-Fi",
-  "durationMinute": 148
-}
-```
-
-### Get All Movies
-
-```bash
-GET /api/movies
-```
-
-**With Pagination:**
+#### Get Movies with Pagination
 
 ```bash
 # Get page 2 with 10 items per page
@@ -226,91 +442,7 @@ GET /api/movies?genre=Action&page=1&limit=20
 GET /api/movies?search=spider&page=1
 ```
 
-**Response:**
-
-```json
-{
-  "data": [
-    {
-      "id": "uuid",
-      "title": "Inception",
-      "genre": "Sci-Fi",
-      ...
-    }
-  ],
-  "meta": {
-    "currentPage": 2,
-    "itemsPerPage": 10,
-    "totalItems": 45,
-    "totalPages": 5,
-    "hasNextPage": true,
-    "hasPreviousPage": true
-  }
-}
-```
-
-### Create Theater (Admin only)
-
-```bash
-POST /api/theatres
-Authorization: Bearer <your-jwt-token>
-Content-Type: application/json
-
-{
-  "name": "Theater 1",
-  "capacity": 100
-}
-```
-
-### Add Seat to Theater (Admin only)
-
-```bash
-POST /api/theatres/{theaterId}/seat
-Authorization: Bearer <your-jwt-token>
-Content-Type: application/json
-
-{
-  "label": "A1",
-  "row": "A",
-  "number": 1,
-  "type": "regular",
-  "extraPrice": 0
-}
-```
-
-### Create Showtime (Admin only)
-
-```bash
-POST /api/showtimes
-Authorization: Bearer <your-jwt-token>
-Content-Type: application/json
-
-{
-  "movieId": "movie-uuid-here",
-  "theaterId": "theater-uuid-here",
-  "startTime": "2025-11-09T14:00:00Z",
-  "endTime": "2025-11-09T16:30:00Z",
-  "price": 12.50
-}
-```
-
-### Get Showtimes with Filters
-
-```bash
-# Get all showtimes (paginated)
-GET /api/showtimes?page=1&limit=15
-
-# Filter by movie
-GET /api/showtimes?movieId=movie-uuid-here&page=1
-
-# Filter by date
-GET /api/showtimes?date=2025-11-09&page=1
-
-# Filter by both
-GET /api/showtimes?movieId=movie-uuid-here&date=2025-11-09&page=1&limit=20
-```
-
-### Create Reservation
+#### Create Reservation
 
 ```bash
 POST /api/reservations
@@ -323,269 +455,192 @@ Content-Type: application/json
 }
 ```
 
-### Get User Reservations
+#### Create Payment Intent
 
 ```bash
-# Get all user reservations (paginated)
-GET /api/reservations?page=1&limit=10
+POST /api/payments/create-intent
 Authorization: Bearer <your-jwt-token>
+Content-Type: application/json
 
-# Filter by status
-GET /api/reservations?status=BOOKED&page=1
-Authorization: Bearer <your-jwt-token>
-```
-
-### Cancel Reservation
-
-```bash
-DELETE /api/reservations/{reservationId}
-Authorization: Bearer <your-jwt-token>
-```
-
-### Analytics - Dashboard Overview (Admin only)
-
-```bash
-GET /api/analytics/dashboard
-Authorization: Bearer <admin-jwt-token>
-```
-
-**Response:**
-
-```json
 {
-  "today": {
-    "reservations": 15,
-    "revenue": 450.00
-  },
-  "totals": {
-    "users": 250,
-    "movies": 12,
-    "theaters": 5,
-    "reservations": 1500,
-    "upcomingShowtimes": 45
-  },
-  "recentReservations": [...]
+  "reservationId": "reservation-uuid-here"
 }
 ```
 
-### Analytics - Revenue Report (Admin only)
+---
+
+## 🗄️ Database Schema
+
+### Models
+
+#### User
+
+- Stores user account information
+- Fields: id, name, email, passwordHash, role, createdAt
+- Relations: reservations
+
+#### Movie
+
+- Stores movie information
+- Fields: id, title, description, posterUrl, genre, durationMin, createdAt
+- Relations: showtimes
+
+#### Theater
+
+- Stores theater/screen information
+- Fields: id, name, capacity, createdAt
+- Relations: seats, showtimes
+
+#### Seat
+
+- Stores individual seat information
+- Fields: id, theaterId, row, number, label, type, extraPrice
+- Relations: theater, reservationSeats
+- Unique constraint: (theaterId, label)
+
+#### Showtime
+
+- Stores movie screening times
+- Fields: id, movieId, theaterId, startTime, endTime, price, status, createdAt
+- Relations: movie, theater, reservations, reservationSeats
+- Unique constraint: (theaterId, startTime)
+
+#### Reservation
+
+- Stores user bookings
+- Fields: id, userId, showtimeId, status, totalPrice, createdAt, expiresAt
+- Enum Status: HELD, BOOKED, CANCELLED, EXPIRED
+- Relations: user, showtime, seats, payment
+
+#### ReservationSeat
+
+- Junction table for reservation-seat relationships
+- Fields: id, reservationId, seatId, showtimeId, priceAtBooking
+- Relations: reservation, seat, showtime
+- Unique constraint: (showtimeId, seatId)
+
+#### Payment
+
+- Stores payment transactions
+- Fields: id, reservationId, amount, providerTxnId, status, createdAt
+- Relations: reservation
+
+---
+
+## 🔒 Security Features
+
+### Authentication & Authorization
+
+- **JWT Tokens**: Secure, stateless authentication
+- **Role-based Access Control**: Separate admin and user permissions
+- **Password Security**: bcrypt hashing with 10 salt rounds
+- **Protected Routes**: Middleware-enforced authentication checks
+
+### API Security
+
+- **Rate Limiting**: Prevents brute force and abuse attacks
+- **Input Validation**: Zod schemas validate all request data
+- **SQL Injection Protection**: Prisma ORM with parameterized queries
+- **CORS Configuration**: Cross-origin request handling
+
+### Data Integrity
+
+- **Transaction Safety**: Database transactions for atomic operations
+- **Row-level Locking**: FOR UPDATE locking prevents race conditions
+- **Unique Constraints**: Prevents duplicate bookings and data conflicts
+- **Cascade Deletion**: Maintains referential integrity
+
+---
+
+## 🎨 Frontend Features
+
+### User Interface
+
+- **Responsive Design**: Mobile-first approach with Tailwind CSS
+- **Component Library**: shadcn/ui for consistent, accessible components
+- **Interactive Seat Map**: Visual seat selection with availability status
+- **Real-time Validation**: Form validation with React Hook Form + Zod
+- **Toast Notifications**: User feedback for actions and errors
+- **Loading States**: Skeleton loaders and progress indicators
+
+### State Management
+
+- **Zustand**: Lightweight state management for booking flow
+- **TanStack Query**: Server state caching and synchronization
+- **Local Storage**: Persist booking state across sessions
+
+### Payment Integration
+
+- **Stripe Elements**: Secure payment input components
+- **Payment Intent Flow**: PCI-compliant payment processing
+- **Webhook Handling**: Backend confirmation of payments
+- **Error Handling**: User-friendly payment error messages
+
+---
+
+## 🧪 Development
+
+### Backend Scripts
 
 ```bash
-# All time revenue
-GET /api/analytics/revenue
-Authorization: Bearer <admin-jwt-token>
+# Development server with auto-reload
+npm run dev
 
-# Revenue for date range
-GET /api/analytics/revenue?startDate=2025-11-01&endDate=2025-11-30
-Authorization: Bearer <admin-jwt-token>
+# Build TypeScript to JavaScript
+npm run build
+
+# Run production server
+npm start
+
+# Open Prisma Studio (Database GUI)
+npx prisma studio
+
+# Run database migrations
+npx prisma migrate dev
+
+# Reset database (development only)
+npx prisma migrate reset
 ```
 
-**Response:**
-
-```json
-{
-  "summary": {
-    "totalRevenue": 15000.00,
-    "totalBookings": 500,
-    "averageBookingValue": 30.00,
-    "period": {...}
-  },
-  "revenueByMovie": [...],
-  "revenueByTheater": [...],
-  "revenueByDate": [...]
-}
-```
-
-### Analytics - Occupancy Report (Admin only)
+### Frontend Scripts
 
 ```bash
-# All time occupancy
-GET /api/analytics/occupancy
-Authorization: Bearer <admin-jwt-token>
+# Development server with hot reload
+npm run dev
 
-# Occupancy for date range
-GET /api/analytics/occupancy?startDate=2025-11-01&endDate=2025-11-30
-Authorization: Bearer <admin-jwt-token>
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+
+# Run ESLint
+npm run lint
 ```
 
-**Response:**
+### Database Management
 
-```json
-{
-  "summary": {
-    "totalShowtimes": 200,
-    "averageOccupancy": 75.5,
-    "period": {...}
-  },
-  "showtimes": [...],
-  "occupancyByMovie": [...],
-  "occupancyByTheater": [...]
-}
-```
-
-### Analytics - Popular Movies (Admin only)
+View and edit your database in Prisma Studio:
 
 ```bash
-# Top 10 popular movies
-GET /api/analytics/popular-movies
-Authorization: Bearer <admin-jwt-token>
-
-# Top 5 popular movies for date range
-GET /api/analytics/popular-movies?limit=5&startDate=2025-11-01&endDate=2025-11-30
-Authorization: Bearer <admin-jwt-token>
+cd server
+npx prisma studio
 ```
 
-**Response:**
-
-```json
-{
-  "summary": {
-    "totalUniqueMovies": 12,
-    "topMoviesCount": 10,
-    "period": {...}
-  },
-  "popularMovies": [
-    {
-      "movieId": "...",
-      "title": "Inception",
-      "totalBookings": 150,
-      "totalSeatsBooked": 300,
-      "totalRevenue": 4500.00
-    },
-    ...
-  ]
-}
-```
-
-### Analytics - Cancellation Report (Admin only)
+Create a new migration:
 
 ```bash
-# All time cancellations
-GET /api/analytics/cancellations
-Authorization: Bearer <admin-jwt-token>
-
-# Cancellations for date range
-GET /api/analytics/cancellations?startDate=2025-11-01&endDate=2025-11-30
-Authorization: Bearer <admin-jwt-token>
+cd server
+npx prisma migrate dev --name your_migration_name
 ```
 
-**Response:**
+---
 
-```json
-{
-  "summary": {
-    "totalReservations": 500,
-    "totalCancellations": 50,
-    "cancellationRate": 10.00,
-    "lostRevenue": 1500.00,
-    "period": {...}
-  },
-  "cancellationsByMovie": [...],
-  "cancellationsByDate": [...]
-}
-```
+## 📊 Analytics Dashboard
 
-## Database Schema
+The admin analytics dashboard provides comprehensive business insights:
 
-The system includes the following models:
-
-- **User** - User accounts with authentication
-- **Movie** - Movie information
-- **Theater** - Theater/screen information
-- **Seat** - Individual seats in theaters
-- **Showtime** - Movie screening times
-- **Reservation** - User bookings
-- **ReservationSeat** - Seat assignments for reservations
-- **Payment** - Payment transactions
-
-## Scripts
-
-- `npm run dev` - Run development server with auto-reload
-- `npm run build` - Build TypeScript to JavaScript
-- `npm start` - Run production server
-- `npx prisma studio` - Open Prisma Studio (Database GUI)
-- `npx prisma migrate dev` - Run database migrations
-
-## Project Structure
-
-```
-server/
-├── prisma/
-│   ├── schema.prisma          # Database schema
-│   └── migrations/            # Database migrations
-├── src/
-│   ├── config/
-│   │   └── db.ts             # Prisma client configuration
-│   ├── controllers/          # Request handlers
-│   │   ├── auth.controller.ts
-│   │   ├── movie.controller.ts
-│   │   ├── theatres.controller.ts
-│   │   ├── showtimes.controller.ts
-│   │   ├── reservations.controller.ts
-│   │   └── analytics.controller.ts
-│   ├── middleware/           # Express middleware
-│   │   ├── auth.middleware.ts
-│   │   └── role.middleware.ts
-│   ├── routes/               # API routes
-│   │   ├── index.ts
-│   │   ├── auth.routes.ts
-│   │   ├── movie.routes.ts
-│   │   ├── theatres.routes.ts
-│   │   ├── showtimes.routes.ts
-│   │   ├── reservations.routes.ts
-│   │   └── analytics.routes.ts
-│   ├── schemas/              # Zod validation schemas
-│   │   ├── auth.schema.ts
-│   │   ├── movie.schema.ts
-│   │   ├── theater.schema.ts
-│   │   ├── showtime.schema.ts
-│   │   └── reservation.schema.ts
-│   ├── services/             # Business logic
-│   │   ├── auth.service.ts
-│   │   ├── movie.service.ts
-│   │   ├── theaters.service.ts
-│   │   ├── showtimes.service.ts
-│   │   ├── reservations.service.ts
-│   │   └── analytics.service.ts
-│   ├── types/                # TypeScript type definitions
-│   │   └── express.d.ts
-│   ├── utils/                # Utility functions
-│   │   ├── hash.ts
-│   │   └── jwt.ts
-│   └── index.ts              # Application entry point
-├── .env                      # Environment variables (gitignored)
-├── .env.example              # Environment variables template
-├── package.json
-└── tsconfig.json
-```
-
-## Security
-
-- Passwords are hashed using bcrypt with 10 salt rounds
-- JWT tokens are used for authentication
-- Role-based access control for protected routes
-- Input validation using Zod schemas
-- SQL injection protection via Prisma ORM
-- Parameterized queries for raw SQL operations
-- Transaction-based seat booking to prevent race conditions
-- Row-level locking (FOR UPDATE) to prevent double-booking
-- **API Rate Limiting** to prevent abuse and brute force attacks
-  - Authentication endpoints: 5 requests per 15 minutes
-  - Reservation endpoints: 20 requests per 15 minutes
-  - Payment endpoints: 10 requests per 15 minutes
-  - Admin endpoints: 50 requests per 15 minutes
-  - Public read endpoints: 200 requests per 15 minutes
-  - General API: 100 requests per 15 minutes
-  - [Full Rate Limiting Documentation](server/docs/RATE_LIMITING.md)
-- **Pagination** for efficient data retrieval
-  - Default: 20 items per page
-  - Maximum: 100 items per page
-  - Applied to all list endpoints
-  - [Full Pagination Documentation](server/docs/PAGINATION.md)
-
-## Analytics Dashboard Features
-
-### 📊 **Dashboard Overview**
+### 📈 Dashboard Overview
 
 - Today's reservations and revenue
 - Total users, movies, theaters count
@@ -593,7 +648,7 @@ server/
 - Upcoming showtimes count
 - Recent reservations list
 
-### 💰 **Revenue Analytics**
+### 💰 Revenue Analytics
 
 - Total revenue and booking statistics
 - Average booking value
@@ -602,7 +657,7 @@ server/
 - Daily revenue trends
 - Date range filtering
 
-### 📈 **Occupancy Analytics**
+### 📊 Occupancy Analytics
 
 - Average occupancy rates
 - Per-showtime occupancy details
@@ -611,7 +666,7 @@ server/
 - Status indicators (full/filling/available)
 - Date range filtering
 
-### 🎬 **Popular Movies**
+### 🎬 Popular Movies
 
 - Top performing movies
 - Total bookings per movie
@@ -620,7 +675,7 @@ server/
 - Customizable top N movies
 - Date range filtering
 
-### ❌ **Cancellation Analytics**
+### ❌ Cancellation Analytics
 
 - Total cancellation count and rate
 - Lost revenue from cancellations
@@ -628,75 +683,108 @@ server/
 - Daily cancellation trends
 - Date range filtering
 
-## Development
+---
 
-### Database Management
+## 🐛 Known Issues & Roadmap
 
-View your database in Prisma Studio:
+### ✅ Completed Features
 
-```bash
-npx prisma studio
-```
+- [x] User authentication and authorization
+- [x] Movie management (CRUD)
+- [x] Theater and seat management
+- [x] Showtime scheduling
+- [x] Seat reservation system
+- [x] Payment processing (Stripe integration)
+- [x] Admin analytics dashboard
+- [x] API rate limiting
+- [x] Pagination for list endpoints
+- [x] Responsive frontend design
 
-Reset database (development only):
+### 🚧 In Progress
 
-```bash
-npx prisma migrate reset
-```
+- [ ] Email notifications for bookings
+- [ ] Reservation expiry handling (cron job)
+- [ ] QR code generation for tickets
 
-## Known Issues / TODO
+### 📝 Planned Features
 
-- [x] Implement theater management endpoints
-- [x] Implement showtime management endpoints
-- [x] Implement seat reservation logic
-- [x] Add admin analytics dashboard
-- [x] **Add rate limiting**
-- [x] **Add pagination to list endpoints**
-- [ ] Add payment processing integration
-- [ ] Add email verification
-- [ ] Add refresh token mechanism
-- [ ] Add comprehensive error handling
-- [ ] Add API documentation (Swagger)
-- [ ] Add unit and integration tests
-- [ ] Add logging system (Winston/Pino)
-- [ ] Add reservation expiry handling (cron job)
-- [ ] Add seat availability endpoint
-- [ ] ~~Add pagination for list endpoints~~ ✅ **DONE**
-- [ ] Add search and filtering for movies
-- [ ] Add booking history and analytics export (CSV/PDF)
-- [ ] Add email notifications for bookings
-- [ ] Add QR code generation for tickets
-
-## Contributing
-
-1. Create a feature branch
-2. Make your changes
-3. Test thoroughly
-4. Submit a pull request
-
-## License
-
-ISC
+- [ ] Email verification
+- [ ] Refresh token mechanism
+- [ ] Comprehensive error handling improvements
+- [ ] API documentation (Swagger/OpenAPI)
+- [ ] Unit and integration tests
+- [ ] Logging system (Winston/Pino)
+- [ ] Advanced search and filtering
+- [ ] Booking history export (CSV/PDF)
+- [ ] Multi-language support
+- [ ] Dark mode
+- [ ] Progressive Web App (PWA)
 
 ---
 
-**Status**: 🚀 **Core Features Complete!**
+## 🤝 Contributing
 
-### Implementation Progress: ~90%
+Contributions are welcome! Please follow these steps:
 
-**Completed:**
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-- ✅ Authentication & Authorization
-- ✅ Movie Management
-- ✅ Theater & Seat Management
-- ✅ Showtime Scheduling
-- ✅ Reservation System with Concurrency Control
-- ✅ Input Validation & Error Handling
-- ✅ Admin Analytics Dashboard
-- ✅ **API Rate Limiting** 🆕
+### Coding Standards
 
-**In Progress:**
+- Follow TypeScript best practices
+- Use ESLint and Prettier for code formatting
+- Write meaningful commit messages
+- Add comments for complex logic
+- Update documentation for new features
 
-- 🚧 Payment Integration
-- 🚧 Email Notifications
-- 🚧 Advanced Features (QR Codes, Export Reports, etc.)
+---
+
+## 📄 License
+
+This project is licensed under the ISC License.
+
+---
+
+## 👤 Author
+
+**Sugam Ghising**
+
+- GitHub: [@sugamghising](https://github.com/sugamghising)
+- Repository: [MovieReservationSystem](https://github.com/sugamghising/MovieReservationSystem)
+
+---
+
+## 🙏 Acknowledgments
+
+- [Prisma](https://www.prisma.io/) - Next-generation ORM
+- [shadcn/ui](https://ui.shadcn.com/) - Beautiful UI components
+- [Stripe](https://stripe.com/) - Payment processing
+- [TanStack Query](https://tanstack.com/query) - Data synchronization
+- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
+
+---
+
+## 📞 Support
+
+For support, email your-email@example.com or open an issue in the GitHub repository.
+
+---
+
+**Status**: 🚀 **Production Ready!**
+
+### Implementation Progress: ~95%
+
+**Core Features Complete** ✅
+
+- Full user authentication and authorization
+- Complete booking flow with payment processing
+- Comprehensive admin dashboard with analytics
+- Real-time seat availability
+- Secure payment integration
+- Rate limiting and security measures
+- Responsive design across all devices
+
+Inspired from - [Roadmap.sh](https://roadmap.sh/projects/movie-reservation-system)

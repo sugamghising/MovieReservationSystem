@@ -14,12 +14,14 @@ interface ReservationCardProps {
   reservation: Reservation;
   onCancel?: (reservationId: string) => void;
   onViewDetails?: (reservationId: string) => void;
+  onPayNow?: (reservationId: string) => void;
 }
 
 export default function ReservationCard({
   reservation,
   onCancel,
   onViewDetails,
+  onPayNow,
 }: ReservationCardProps) {
   const getStatusBadge = (status: string) => {
     const variants = {
@@ -117,6 +119,14 @@ export default function ReservationCard({
 
       {(canCancel || onViewDetails) && (
         <CardFooter className="flex gap-2">
+          {reservation.status === "HELD" && onPayNow && (
+            <Button
+              onClick={() => onPayNow(reservation.id)}
+              className="flex-1 bg-gradient-to-r from-rose-600 to-purple-600 hover:from-rose-700 hover:to-purple-700"
+            >
+              Pay Now - ${reservation.totalPrice}
+            </Button>
+          )}
           {onViewDetails && (
             <Button
               variant="outline"

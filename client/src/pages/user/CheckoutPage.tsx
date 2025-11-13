@@ -37,14 +37,50 @@ export default function CheckoutPage() {
   const confirmPayment = useConfirmPayment();
 
   useEffect(() => {
-    // Redirect if no booking data or reservation
-    if (!movie || !showtime || selectedSeats.length === 0 || !reservationId) {
-      navigate("/movies");
-    }
-  }, [movie, showtime, selectedSeats, reservationId, navigate]);
+    // Add a delay to allow the store to be populated when coming from My Reservations
+    const timer = setTimeout(() => {
+      console.log("CheckoutPage - Checking booking store:", {
+        hasMovie: !!movie,
+        movieTitle: movie?.title || "none",
+        hasShowtime: !!showtime,
+        seatsCount: selectedSeats.length,
+        seats: selectedSeats.map((s) => s.seatNumber),
+        hasReservationId: !!reservationId,
+        reservationId: reservationId || "none",
+        totalPrice,
+      });
+
+      // Redirect if no booking data or reservation
+      if (!movie || !showtime || selectedSeats.length === 0 || !reservationId) {
+        console.warn("CheckoutPage - Missing data, redirecting to movies");
+        toast({
+          variant: "destructive",
+          title: "Missing Booking Information",
+          description: "Please select seats first to proceed to checkout.",
+        });
+        navigate("/movies");
+      } else {
+        console.log("CheckoutPage - All data present, showing checkout form");
+      }
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, [
+    movie,
+    showtime,
+    selectedSeats,
+    reservationId,
+    totalPrice,
+    navigate,
+    toast,
+  ]);
 
   if (!movie || !showtime) {
-    return null;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Skeleton className="h-96 w-full max-w-4xl" />
+      </div>
+    );
   }
 
   const handlePayment = async () => {
@@ -138,7 +174,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20 py-8">
-      <div className="container max-w-7xl">
+      <div className="container max-w-7xl ml-8 md:ml-12 lg:ml-16">
         {/* Enhanced Header */}
         <div className="mb-8 space-y-4">
           <Button

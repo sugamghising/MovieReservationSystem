@@ -36,7 +36,7 @@ export default function PaymentSuccessPage() {
 
   return (
     <div className="min-h-screen py-8 bg-gradient-to-b from-background via-background to-muted/20">
-      <div className="container max-w-3xl">
+      <div className="container max-w-3xl ml-8 md:ml-12 lg:ml-16">
         {/* Enhanced Success Message */}
         <div className="text-center mb-8 animate-fade-in">
           <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 mb-6 shadow-2xl shadow-green-500/50 animate-pulse-glow">

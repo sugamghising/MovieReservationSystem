@@ -75,6 +75,9 @@ export interface Reservation {
     reservationSeats?: Array<{
         seat: Seat;
     }>;
+    seats?: Array<{
+        seat: Seat;
+    }>;
     payment?: Payment;
 }
 

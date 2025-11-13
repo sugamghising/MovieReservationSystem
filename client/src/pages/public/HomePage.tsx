@@ -18,7 +18,7 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="relative bg-gradient-to-r from-primary/90 to-primary/70 text-primary-foreground py-20 md:py-32">
         <div className="absolute inset-0 bg-[url('/hero-pattern.svg')] opacity-10" />
-        <div className="container relative z-10">
+        <div className="container relative z-10 ml-8 md:ml-12 lg:ml-16">
           <div className="max-w-3xl">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
               Book Your Movie Tickets Online
@@ -41,7 +41,7 @@ export default function HomePage() {
 
       {/* Features Section */}
       <section className="py-16 md:py-24 bg-muted/50">
-        <div className="container">
+        <div className="container ml-8 md:ml-12 lg:ml-16">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Why Choose Us?
@@ -117,7 +117,7 @@ export default function HomePage() {
 
       {/* Now Showing Section */}
       <section className="py-16 md:py-24">
-        <div className="container">
+        <div className="container ml-8 md:ml-12 lg:ml-16">
           <div className="flex items-center justify-between mb-8">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold mb-2">
@@ -156,7 +156,7 @@ export default function HomePage() {
 
       {/* CTA Section */}
       <section className="py-16 md:py-24 bg-primary text-primary-foreground">
-        <div className="container text-center">
+        <div className="container text-center ml-8 md:ml-12 lg:ml-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Ready to Book Your Tickets?
           </h2>
