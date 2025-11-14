@@ -29,7 +29,9 @@ export default function HomePage() {
             </p>
             <div className="flex flex-wrap gap-4">
               <Button size="lg" variant="secondary" asChild>
-                <Link to="/movies">Browse Movies</Link>
+                <Link to="/movies" className="text-white">
+                  Browse Movies
+                </Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
                 <Link to="/showtimes">View Showtimes</Link>

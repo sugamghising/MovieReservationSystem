@@ -32,7 +32,7 @@ export default function ShowtimesPage() {
       setMovie(showtime.movie);
     }
     setShowtime(showtime);
-    navigate("/booking");
+    navigate(`/booking/${showtime.id}`);
   };
 
   // Group showtimes by movie
