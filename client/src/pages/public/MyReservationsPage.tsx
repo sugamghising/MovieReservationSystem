@@ -52,39 +52,52 @@ export default function MyReservationsPage() {
   const cancelledReservations = filterReservations("CANCELLED");
 
   return (
-    <div className="min-h-screen py-8">
-      <div className="container max-w-5xl">
+    <div className="min-h-screen py-4 sm:py-6 md:py-8">
+      <div className="container max-w-5xl px-4 sm:px-6">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">My Reservations</h1>
-          <p className="text-lg text-muted-foreground">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 sm:mb-2">
+            My Reservations
+          </h1>
+          <p className="text-sm sm:text-base md:text-lg text-muted-foreground">
             View and manage your movie bookings
           </p>
         </div>
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-6">
-            <TabsTrigger value="all">All ({reservations.length})</TabsTrigger>
-            <TabsTrigger value="BOOKED">
+          <TabsList className="mb-4 sm:mb-6 w-full sm:w-auto grid grid-cols-3 sm:inline-flex h-auto sm:h-9">
+            <TabsTrigger
+              value="all"
+              className="text-xs sm:text-sm px-2 py-2 sm:px-3 sm:py-1"
+            >
+              All ({reservations.length})
+            </TabsTrigger>
+            <TabsTrigger
+              value="BOOKED"
+              className="text-xs sm:text-sm px-2 py-2 sm:px-3 sm:py-1"
+            >
               Active ({activeReservations.length})
             </TabsTrigger>
-            <TabsTrigger value="CANCELLED">
+            <TabsTrigger
+              value="CANCELLED"
+              className="text-xs sm:text-sm px-2 py-2 sm:px-3 sm:py-1"
+            >
               Cancelled ({cancelledReservations.length})
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="all">
             {isLoading ? (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {[...Array(3)].map((_, i) => (
-                  <Card key={i} className="p-6">
-                    <Skeleton className="h-24 w-full" />
+                  <Card key={i} className="p-4 sm:p-6">
+                    <Skeleton className="h-20 sm:h-24 w-full" />
                   </Card>
                 ))}
               </div>
             ) : reservations.length > 0 ? (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {reservations.map((reservation) => (
                   <ReservationCard
                     key={reservation.id}
@@ -109,15 +122,15 @@ export default function MyReservationsPage() {
 
           <TabsContent value="BOOKED">
             {isLoading ? (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {[...Array(3)].map((_, i) => (
-                  <Card key={i} className="p-6">
-                    <Skeleton className="h-24 w-full" />
+                  <Card key={i} className="p-4 sm:p-6">
+                    <Skeleton className="h-20 sm:h-24 w-full" />
                   </Card>
                 ))}
               </div>
             ) : activeReservations.length > 0 ? (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {activeReservations.map((reservation) => (
                   <ReservationCard
                     key={reservation.id}
@@ -142,15 +155,15 @@ export default function MyReservationsPage() {
 
           <TabsContent value="CANCELLED">
             {isLoading ? (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {[...Array(3)].map((_, i) => (
-                  <Card key={i} className="p-6">
-                    <Skeleton className="h-24 w-full" />
+                  <Card key={i} className="p-4 sm:p-6">
+                    <Skeleton className="h-20 sm:h-24 w-full" />
                   </Card>
                 ))}
               </div>
             ) : cancelledReservations.length > 0 ? (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {cancelledReservations.map((reservation) => (
                   <ReservationCard
                     key={reservation.id}
