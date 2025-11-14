@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Search, Film } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Film } from "lucide-react";
 import MovieCard from "@/components/movies/MovieCard";
 import MovieFilters, {
   type MovieFilters as MovieFiltersType,
