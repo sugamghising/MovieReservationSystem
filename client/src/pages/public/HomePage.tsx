@@ -171,7 +171,9 @@ export default function HomePage() {
               <Link to="/register">Create Account</Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
-              <Link to="/movies">Browse Movies</Link>
+              <Link to="/movies" className="text-white">
+                Browse Movies
+              </Link>
             </Button>
           </div>
         </div>
