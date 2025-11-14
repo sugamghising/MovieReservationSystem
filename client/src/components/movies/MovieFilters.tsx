@@ -150,7 +150,7 @@ export default function MovieFiltersComponent({
             <SlidersHorizontal className="h-4 w-4" />
           </Button>
         </SheetTrigger>
-        <SheetContent>
+        <SheetContent style={{ backgroundColor: "white" }} className="bg-white">
           <SheetHeader>
             <SheetTitle>Filters</SheetTitle>
             <SheetDescription>Filter and sort movies</SheetDescription>

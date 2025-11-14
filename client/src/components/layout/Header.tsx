@@ -34,33 +34,44 @@ export default function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
+          <nav
+            className="hidden md:flex items-center space-x-10"
+            style={{ boxShadow: "none" }}
+          >
             <Link
               to={ROUTES.MOVIES}
-              className="text-sm font-medium transition-colors hover:text-primary"
+              className="text-sm font-bold transition-all duration-300 hover:text-primary hover:scale-110 relative group"
+              style={{ textShadow: "none" }}
             >
-              Movies
+              <span className="relative z-10">Movies</span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
             </Link>
             <Link
               to={ROUTES.SHOWTIMES}
-              className="text-sm font-medium transition-colors hover:text-primary"
+              className="text-sm font-bold transition-all duration-300 hover:text-primary hover:scale-110 relative group"
+              style={{ textShadow: "none" }}
             >
-              Showtimes
+              <span className="relative z-10">Showtimes</span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
             </Link>
             {isAuthenticated && (
               <Link
                 to={ROUTES.MY_RESERVATIONS}
-                className="text-sm font-medium transition-colors hover:text-primary"
+                className="text-sm font-bold transition-all duration-300 hover:text-primary hover:scale-110 relative group"
+                style={{ textShadow: "none" }}
               >
-                My Bookings
+                <span className="relative z-10">My Bookings</span>
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
               </Link>
             )}
             {isAuthenticated && user?.role === "ADMIN" && (
               <Link
                 to={ROUTES.ADMIN_DASHBOARD}
-                className="text-sm font-medium transition-colors hover:text-primary"
+                className="text-sm font-bold transition-all duration-300 hover:text-primary hover:scale-110 relative group"
+                style={{ textShadow: "none" }}
               >
-                Dashboard
+                <span className="relative z-10">Dashboard</span>
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
               </Link>
             )}
           </nav>
@@ -133,17 +144,17 @@ export default function Header() {
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <div className="md:hidden py-4 space-y-3">
+          <div className="md:hidden py-4 space-y-3 animate-slide-in">
             <Link
               to={ROUTES.MOVIES}
-              className="block py-2 text-sm font-medium"
+              className="block py-2 text-sm font-medium transition-all duration-300 hover:text-primary hover:translate-x-2"
               onClick={() => setMobileMenuOpen(false)}
             >
               Movies
             </Link>
             <Link
               to={ROUTES.SHOWTIMES}
-              className="block py-2 text-sm font-medium"
+              className="block py-2 text-sm font-medium transition-all duration-300 hover:text-primary hover:translate-x-2"
               onClick={() => setMobileMenuOpen(false)}
             >
               Showtimes
@@ -152,7 +163,7 @@ export default function Header() {
               <>
                 <Link
                   to={ROUTES.MY_RESERVATIONS}
-                  className="block py-2 text-sm font-medium"
+                  className="block py-2 text-sm font-medium transition-all duration-300 hover:text-primary hover:translate-x-2"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   My Bookings
@@ -160,7 +171,7 @@ export default function Header() {
                 {user?.role === "ADMIN" && (
                   <Link
                     to={ROUTES.ADMIN_DASHBOARD}
-                    className="block py-2 text-sm font-medium"
+                    className="block py-2 text-sm font-medium transition-all duration-300 hover:text-primary hover:translate-x-2"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Dashboard
@@ -168,7 +179,7 @@ export default function Header() {
                 )}
                 <Link
                   to={ROUTES.PROFILE}
-                  className="block py-2 text-sm font-medium"
+                  className="block py-2 text-sm font-medium transition-all duration-300 hover:text-primary hover:translate-x-2"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Profile
